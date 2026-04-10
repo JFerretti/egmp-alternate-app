@@ -138,7 +138,9 @@ export default function StatusScreen() {
             {car.nickName || car.modelName}
           </Text>
           <Text style={[styles.carSub, { color: t.onSurfaceVariant }]}>
-            {car.modelYear} {car.modelName}
+            {car.nickName && car.nickName !== car.modelName
+              ? `${car.modelYear} ${car.modelName}`
+              : car.modelYear}
           </Text>
         </View>
       )}
