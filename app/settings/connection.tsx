@@ -129,13 +129,14 @@ export default function ConnectionScreen() {
                 <MaterialCommunityIcons name="car" size={20} color={t.onSurface} />
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.carOptionName, { color: t.onSurface }]}>
-                    {opt.nickName || opt.modelName}
+                    {opt.nickName && opt.nickName !== opt.modelName
+                      ? opt.nickName
+                      : `${opt.modelYear} ${opt.modelName}`}
                   </Text>
                   <Text style={[styles.carOptionDetail, { color: t.onSurfaceVariant }]}>
                     {opt.nickName && opt.nickName !== opt.modelName
-                      ? `${opt.modelYear} ${opt.modelName}`
-                      : opt.modelYear}
-                    {' — '}{opt.vin}
+                      ? `${opt.modelYear} ${opt.modelName} — ${opt.vin}`
+                      : opt.vin}
                   </Text>
                 </View>
               </View>
