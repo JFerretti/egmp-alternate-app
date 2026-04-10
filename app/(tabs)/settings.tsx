@@ -14,6 +14,12 @@ import { Config, DEFAULT_CONFIG, SUPPORTED_REGIONS, SUPPORTED_MANUFACTURERS, get
 import { loadConfig, saveConfig, clearConfig } from '@/src/storage/configStore';
 import { useCarStore } from '@/src/store/carStore';
 
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <Text style={styles.sectionHeader}>{title}</Text>
+  );
+}
+
 function Picker({ label, value, options, onSelect }: {
   label: string;
   value: string;
@@ -68,6 +74,11 @@ export default function SettingsScreen() {
 
   const updateAuth = (key: keyof Config['auth'], value: string) => {
     setConfig((prev) => ({ ...prev, auth: { ...prev.auth, [key]: value } }));
+  };
+
+  const handleSavePreferences = async () => {
+    await saveConfig(config);
+    Alert.alert('Saved', 'Preferences updated.');
   };
 
   const handleConnect = async () => {
@@ -125,7 +136,6 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
-
       {/* Connected car info */}
       {isConnected && car && (
         <View style={styles.connectedBanner}>
@@ -161,25 +171,26 @@ export default function SettingsScreen() {
               </View>
             </TouchableOpacity>
           ))}
+          {isLoading && (
+            <View style={styles.loadingRow}>
+              <ActivityIndicator />
+              <Text style={styles.helperText}>Connecting to vehicle...</Text>
+            </View>
+          )}
         </View>
       )}
 
-      {/* Configuration — hide during car selection */}
-      {!needsCarSelection && (
+      {/* Connection Setup — only show when NOT connected and NOT selecting a car */}
+      {!isConnected && !needsCarSelection && (
         <>
-          <Picker
-            label="Manufacturer"
-            value={config.manufacturer}
-            options={SUPPORTED_MANUFACTURERS.map((m) => ({ label: m, value: m.toLowerCase() }))}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, manufacturer: v }))}
-          />
+          <SectionHeader title="Connection Setup" />
 
-          <Picker
-            label="Region"
-            value={config.auth.region}
+          <Picker label="Manufacturer" value={config.manufacturer}
+            options={SUPPORTED_MANUFACTURERS.map((m) => ({ label: m, value: m.toLowerCase() }))}
+            onSelect={(v) => setConfig((prev) => ({ ...prev, manufacturer: v }))} />
+          <Picker label="Region" value={config.auth.region}
             options={SUPPORTED_REGIONS.map((r) => ({ label: r.charAt(0).toUpperCase() + r.slice(1), value: r }))}
-            onSelect={(v) => updateAuth('region', v)}
-          />
+            onSelect={(v) => updateAuth('region', v)} />
 
           {authMethod === 'refresh_token' && (
             <View style={styles.field}>
@@ -188,13 +199,9 @@ export default function SettingsScreen() {
                 style={[styles.input, { minHeight: 80, textAlignVertical: 'top', fontSize: 13 }]}
                 value={config.auth.refreshToken ?? ''}
                 onChangeText={(v) => updateAuth('refreshToken', v)}
-                multiline
-                numberOfLines={3}
-                autoCapitalize="none"
-                autoCorrect={false}
+                multiline numberOfLines={3} autoCapitalize="none" autoCorrect={false}
                 placeholder="Paste refresh token from bluelink_refresh_token tool"
-                placeholderTextColor="#999"
-              />
+                placeholderTextColor="#999" />
             </View>
           )}
 
@@ -202,123 +209,95 @@ export default function SettingsScreen() {
             <>
               <View style={styles.field}>
                 <Text style={styles.label}>Username / Email</Text>
-                <TextInput
-                  style={styles.input}
-                  value={config.auth.username}
+                <TextInput style={styles.input} value={config.auth.username}
                   onChangeText={(v) => updateAuth('username', v)}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  placeholder="email@example.com"
-                  placeholderTextColor="#999"
-                />
+                  autoCapitalize="none" keyboardType="email-address"
+                  placeholder="email@example.com" placeholderTextColor="#999" />
               </View>
-
               <View style={styles.field}>
                 <Text style={styles.label}>Password</Text>
-                <TextInput
-                  style={styles.input}
-                  value={config.auth.password}
+                <TextInput style={styles.input} value={config.auth.password}
                   onChangeText={(v) => updateAuth('password', v)}
-                  secureTextEntry
-                  placeholder="Password"
-                  placeholderTextColor="#999"
-                />
+                  secureTextEntry placeholder="Password" placeholderTextColor="#999" />
               </View>
             </>
           )}
 
           <View style={styles.field}>
             <Text style={styles.label}>PIN</Text>
-            <TextInput
-              style={styles.input}
-              value={config.auth.pin}
+            <TextInput style={styles.input} value={config.auth.pin}
               onChangeText={(v) => updateAuth('pin', v)}
-              keyboardType="number-pad"
-              secureTextEntry
-              placeholder="Vehicle PIN"
-              placeholderTextColor="#999"
-            />
+              keyboardType="number-pad" secureTextEntry
+              placeholder="Vehicle PIN" placeholderTextColor="#999" />
           </View>
 
           <View style={styles.field}>
             <Text style={styles.label}>VIN (optional, for multiple vehicles)</Text>
-            <TextInput
-              style={styles.input}
-              value={config.vin ?? ''}
+            <TextInput style={styles.input} value={config.vin ?? ''}
               onChangeText={(v) => setConfig((prev) => ({ ...prev, vin: v || undefined }))}
-              autoCapitalize="characters"
-              placeholder="KMXXXXXXXXXXXXXXX"
-              placeholderTextColor="#999"
-            />
+              autoCapitalize="characters" placeholder="KMXXXXXXXXXXXXXXX" placeholderTextColor="#999" />
           </View>
 
-          <Picker
-            label="Temperature Unit"
-            value={config.tempType}
-            options={[
-              { label: 'Celsius', value: 'C' },
-              { label: 'Fahrenheit', value: 'F' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, tempType: v as 'C' | 'F' }))}
-          />
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
-          <Picker
-            label="Distance Unit"
-            value={config.distanceUnit}
-            options={[
-              { label: 'km', value: 'km' },
-              { label: 'mi', value: 'mi' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, distanceUnit: v as 'km' | 'mi' }))}
-          />
-
-          <Picker
-            label="Debug Logging"
-            value={config.debugLogging ? 'on' : 'off'}
-            options={[
-              { label: 'Off', value: 'off' },
-              { label: 'On', value: 'on' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, debugLogging: v === 'on' }))}
-          />
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleConnect} disabled={isLoading}>
+            {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Connect</Text>}
+          </TouchableOpacity>
         </>
       )}
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      {/* Connect/Reconnect — only when not in car selection */}
+      {/* Preferences — always visible (except during car selection) */}
       {!needsCarSelection && (
-        <TouchableOpacity
-          style={[styles.button, isLoading && styles.buttonDisabled]}
-          onPress={handleConnect}
-          disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>
-              {isConnected ? 'Reconnect' : 'Connect'}
-            </Text>
-          )}
-        </TouchableOpacity>
+        <>
+          <SectionHeader title="Preferences" />
+
+          <Picker label="Temperature Unit" value={config.tempType}
+            options={[{ label: 'Celsius', value: 'C' }, { label: 'Fahrenheit', value: 'F' }]}
+            onSelect={(v) => setConfig((prev) => ({ ...prev, tempType: v as 'C' | 'F' }))} />
+          <Picker label="Distance Unit" value={config.distanceUnit}
+            options={[{ label: 'km', value: 'km' }, { label: 'mi', value: 'mi' }]}
+            onSelect={(v) => setConfig((prev) => ({ ...prev, distanceUnit: v as 'km' | 'mi' }))} />
+          <Picker label="Debug Logging" value={config.debugLogging ? 'on' : 'off'}
+            options={[{ label: 'Off', value: 'off' }, { label: 'On', value: 'on' }]}
+            onSelect={(v) => setConfig((prev) => ({ ...prev, debugLogging: v === 'on' }))} />
+
+          <TouchableOpacity style={styles.buttonSave} onPress={handleSavePreferences}>
+            <Text style={styles.buttonSaveText}>Save Preferences</Text>
+          </TouchableOpacity>
+        </>
       )}
 
-      {/* Loading during car selection */}
-      {needsCarSelection && isLoading && (
-        <View style={styles.loadingRow}>
-          <ActivityIndicator />
-          <Text style={styles.helperText}>Connecting to vehicle...</Text>
-        </View>
+      {/* Connection Management — only when connected */}
+      {isConnected && !needsCarSelection && (
+        <>
+          <SectionHeader title="Connection" />
+
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
+            onPress={handleConnect} disabled={isLoading}>
+            {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reconnect</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.buttonDanger} onPress={handleDisconnect}>
+            <Text style={styles.buttonText}>Disconnect</Text>
+          </TouchableOpacity>
+        </>
       )}
 
-      {isConnected && (
-        <TouchableOpacity style={styles.buttonDanger} onPress={handleDisconnect}>
-          <Text style={styles.buttonText}>Disconnect</Text>
-        </TouchableOpacity>
+      {/* Danger Zone */}
+      {!needsCarSelection && (
+        <>
+          <SectionHeader title="Danger Zone" />
+          <TouchableOpacity style={styles.buttonReset} onPress={handleReset}>
+            <Text style={styles.buttonResetText}>Reset All Data</Text>
+          </TouchableOpacity>
+        </>
       )}
 
-      <TouchableOpacity style={styles.buttonReset} onPress={handleReset}>
-        <Text style={styles.buttonResetText}>Reset All Data</Text>
-      </TouchableOpacity>
+      {/* Show error when connected too */}
+      {isConnected && error && <Text style={styles.error}>{error}</Text>}
     </ScrollView>
   );
 }
@@ -413,6 +392,24 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   buttonResetText: { color: '#666', fontSize: 16, fontWeight: '600' as const },
+  sectionHeader: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    color: '#666',
+    marginTop: 24,
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  buttonSave: {
+    backgroundColor: '#4caf50',
+    padding: 16,
+    borderRadius: 10,
+    alignItems: 'center' as const,
+    marginTop: 8,
+  },
+  buttonSaveText: { color: '#fff', fontSize: 16, fontWeight: '600' as const },
   error: { color: '#d44', marginBottom: 8, fontSize: 14 },
   loadingRow: {
     flexDirection: 'row',
