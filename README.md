@@ -87,3 +87,31 @@ src/
     secureStore.ts      # Secure storage adapter
   store/carStore.ts     # Zustand store (connection, commands, state)
 ```
+
+## Testing
+
+Run all tests:
+```bash
+npm test
+```
+
+Run tests in watch mode:
+```bash
+npm test -- --watch
+```
+
+Run a specific test file:
+```bash
+npm test -- __tests__/carStore.test.ts
+```
+
+Type-check without emitting:
+```bash
+npx tsc --noEmit
+```
+
+### CI
+
+Pull requests and pushes to `main` are checked automatically via GitHub Actions:
+- TypeScript type-checking
+- Jest unit tests
