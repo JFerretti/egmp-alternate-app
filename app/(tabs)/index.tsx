@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
+  RefreshControl,
   TouchableOpacity,
-  ActivityIndicator,
   View,
   Text,
 } from 'react-native';
@@ -91,7 +91,15 @@ export default function StatusScreen() {
   return (
     <ScrollView
       style={[styles.scroll, { backgroundColor: t.surface }]}
-      contentContainerStyle={styles.container}>
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={() => refreshStatus(false)}
+          tintColor={t.primary}
+          colors={[t.primary]}
+        />
+      }>
       {/* Car header */}
       {car && (
         <View style={styles.carHeader}>
@@ -193,36 +201,20 @@ export default function StatusScreen() {
         </View>
       )}
 
-      {/* Action buttons */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.filledButton, { backgroundColor: t.primary, flex: 1 }, isLoading && styles.buttonDisabled]}
-          onPress={() => refreshStatus(false)}
-          disabled={isLoading}>
-          {isLoading ? (
-            <ActivityIndicator color={t.onPrimary} />
-          ) : (
-            <>
-              <MaterialCommunityIcons name="refresh" size={18} color={t.onPrimary} />
-              <Text style={[styles.filledButtonText, { color: t.onPrimary }]}>Refresh</Text>
-            </>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.tonalButton,
-            { backgroundColor: t.secondaryContainer, flex: 1 },
-            isLoading && styles.buttonDisabled,
-          ]}
-          onPress={() => refreshStatus(true, true)}
-          disabled={isLoading}>
-          <MaterialCommunityIcons name="car-connected" size={18} color={t.onSecondaryContainer} />
-          <Text style={[styles.tonalButtonText, { color: t.onSecondaryContainer }]}>
-            Force Update
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Force Update button */}
+      <TouchableOpacity
+        style={[
+          styles.tonalButton,
+          { backgroundColor: t.secondaryContainer },
+          isLoading && styles.buttonDisabled,
+        ]}
+        onPress={() => refreshStatus(true, true)}
+        disabled={isLoading}>
+        <MaterialCommunityIcons name="car-connected" size={18} color={t.onSecondaryContainer} />
+        <Text style={[styles.tonalButtonText, { color: t.onSecondaryContainer }]}>
+          Force Update
+        </Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -304,7 +296,6 @@ const styles = StyleSheet.create({
   lastUpdate: { textAlign: 'center', fontSize: 12, marginBottom: 20, letterSpacing: 0.2 },
 
   // Buttons
-  buttonRow: { flexDirection: 'row', gap: 12 },
   filledButton: {
     flexDirection: 'row',
     alignItems: 'center',
