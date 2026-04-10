@@ -134,19 +134,29 @@ function sanitizeControlToken(data: any): any {
   }
 }
 
+function sanitizeUUIDs(data: any): any {
+  const json = JSON.stringify(data)
+  return JSON.parse(
+    json
+      .replace(/"msgId":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"msgId": "fixture-msg-id"')
+      .replace(/"SID":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"SID": "fixture-sid"')
+      .replace(/"vehicleId":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"vehicleId": "fixture-vehicle-id-001"')
+      .replace(/"deviceId":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"deviceId": "fixture-device-id"')
+  )
+}
+
 function sanitizeCommandResponse(data: any): any {
-  if (!data?.msgId) return data
-  return {
-    ...data,
-    msgId: 'fixture-transaction-id',
-  }
+  const sanitized = sanitizeUUIDs(data)
+  if (sanitized?.msgId) sanitized.msgId = 'fixture-transaction-id'
+  return sanitized
 }
 
 function sanitizePollRecords(data: any): any {
-  if (!Array.isArray(data?.resMsg)) return data
+  const sanitized = sanitizeUUIDs(data)
+  if (!Array.isArray(sanitized?.resMsg)) return sanitized
   return {
-    ...data,
-    resMsg: data.resMsg.map((record: any) => ({
+    ...sanitized,
+    resMsg: sanitized.resMsg.map((record: any) => ({
       ...record,
       recordId: record.recordId ? 'fixture-transaction-id' : record.recordId,
     })),

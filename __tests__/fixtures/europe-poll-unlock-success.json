@@ -3,8 +3,8 @@
   "resCode": "0000",
   "resMsg": [
     {
-      "deviceId": "dcf5eb63-965b-4d13-9414-8845171f41d8",
-      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
       "recordId": "fixture-transaction-id",
       "confirmedYn": false,
       "action": "bluelink://control/door/open",
@@ -14,5 +14,5 @@
       "updatedAt": "2026-04-10 19:19:33.040"
     }
   ],
-  "msgId": "71dd3d40-3501-11f1-bda4-b22005779e5b"
+  "msgId": "fixture-msg-id"
 }

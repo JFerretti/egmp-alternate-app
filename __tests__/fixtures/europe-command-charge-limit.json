@@ -1,3 +1,5 @@
 {
-  "error": "Access to this API has been disallowed"
+  "retCode": "S",
+  "resCode": "0000",
+  "msgId": "fixture-transaction-id"
 }

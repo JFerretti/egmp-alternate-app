@@ -7,11 +7,11 @@
       "vehicleId": "fixture-vehicle-id-001",
       "recordId": "fixture-transaction-id",
       "confirmedYn": false,
-      "action": "bluelink://control/door/close",
+      "action": "bluelink://charge/target",
       "result": "success",
-      "record": "[Success] Doors locked.",
-      "createdAt": "2026-04-10 19:20:03.639",
-      "updatedAt": "2026-04-10 19:20:06.313"
+      "record": "[Success] Target charge limit setting completed.",
+      "createdAt": "2026-04-10 19:38:20.922",
+      "updatedAt": "2026-04-10 19:38:27.588"
     }
   ],
   "msgId": "fixture-msg-id"

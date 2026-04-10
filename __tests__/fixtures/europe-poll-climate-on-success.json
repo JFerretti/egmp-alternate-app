@@ -3,8 +3,8 @@
   "resCode": "0000",
   "resMsg": [
     {
-      "deviceId": "3086168c-0587-4f9f-afb9-3be0676b77d9",
-      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
       "recordId": "fixture-transaction-id",
       "confirmedYn": false,
       "action": "bluelink://control/temperature/start",
@@ -14,5 +14,5 @@
       "updatedAt": "2026-04-10 19:21:19.332"
     }
   ],
-  "msgId": "b13adba0-3501-11f1-871f-7ca2ce13dbb5"
+  "msgId": "fixture-msg-id"
 }

@@ -3,8 +3,8 @@
   "resCode": "0000",
   "resMsg": [
     {
-      "deviceId": "5b0e7145-8b72-4555-9cb1-e141069164d5",
-      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
       "recordId": "fixture-transaction-id",
       "confirmedYn": false,
       "action": "bluelink://control/charge/start",
@@ -14,5 +14,5 @@
       "updatedAt": "2026-04-10 19:28:35.513"
     }
   ],
-  "msgId": "b481fae0-3502-11f1-871f-7dd0e92d5100"
+  "msgId": "fixture-msg-id"
 }
