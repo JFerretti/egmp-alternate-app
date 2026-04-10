@@ -36,6 +36,7 @@ interface CarStore {
   sendClimateOn: (config: ClimateRequest) => Promise<boolean>
   sendClimateOff: () => Promise<boolean>
   sendSetChargeLimit: (config: ChargeLimit) => Promise<boolean>
+  updateConfig: (config: Config) => Promise<void>
   clearError: () => void
   clearCommandError: () => void
 }
@@ -291,6 +292,21 @@ export const useCarStore = create<CarStore>((set, get) => ({
       console.error('[Bluelink] Set charge limit failed:', e)
       set({ isCommandLoading: false, commandError: friendlyError(e) })
       return false
+    }
+  },
+
+  updateConfig: async (config) => {
+    const { bluelink } = get()
+    if (!bluelink) return
+    bluelink.updateConfig(config)
+    // Force refresh to re-convert values (e.g. range) with new units
+    try {
+      set({ isLoading: true, error: null })
+      const { car, status } = await bluelink.getStatus(true, true)
+      set({ car, status, isLoading: false })
+    } catch (e: any) {
+      console.error('[Bluelink] Refresh after config update failed:', e)
+      set({ isLoading: false, error: friendlyError(e) })
     }
   },
 

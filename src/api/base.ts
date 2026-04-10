@@ -225,6 +225,11 @@ export class Bluelink {
     }
   }
 
+  public updateConfig(config: Config): void {
+    this.config = config
+    this.distanceUnit = config.distanceUnit
+  }
+
   public getDistanceUnit(): string {
     return this.distanceUnit
   }
