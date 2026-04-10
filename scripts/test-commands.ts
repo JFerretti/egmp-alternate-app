@@ -20,6 +20,10 @@
  */
 
 import * as readline from 'readline'
+import * as fs from 'fs'
+import * as path from 'path'
+
+const FIXTURES_DIR = path.join(__dirname, '..', '__tests__', 'fixtures')
 
 const REFRESH_TOKEN = process.env.BLUELINK_REFRESH_TOKEN
 const PIN = process.env.BLUELINK_PIN
@@ -114,6 +118,39 @@ async function apiRequest(url: string, opts: RequestInit = {}): Promise<any> {
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function saveFixture(name: string, data: any) {
+  const filePath = path.join(FIXTURES_DIR, `${name}.json`)
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n')
+  console.log(`   [fixture saved: ${name}.json]`)
+}
+
+function sanitizeControlToken(data: any): any {
+  if (!data?.controlToken) return data
+  return {
+    ...data,
+    controlToken: 'fixture-control-token',
+  }
+}
+
+function sanitizeCommandResponse(data: any): any {
+  if (!data?.msgId) return data
+  return {
+    ...data,
+    msgId: 'fixture-transaction-id',
+  }
+}
+
+function sanitizePollRecords(data: any): any {
+  if (!Array.isArray(data?.resMsg)) return data
+  return {
+    ...data,
+    resMsg: data.resMsg.map((record: any) => ({
+      ...record,
+      recordId: record.recordId ? 'fixture-transaction-id' : record.recordId,
+    })),
+  }
 }
 
 async function main() {
@@ -237,6 +274,7 @@ async function main() {
   }
   const controlToken = `Bearer ${pinResult.json.controlToken}`
   console.log(`   OK — control token acquired (expires in ${pinResult.json.expiresTime}s)`)
+  saveFixture('europe-auth-code', sanitizeControlToken(pinResult.json))
 
   // Step 6: Build and send command
   let commandUrl: string
@@ -308,6 +346,7 @@ async function main() {
 
   console.log(`   Response (${commandResult.status}):`)
   console.log(`   ${JSON.stringify(commandResult.json, null, 2)}`)
+  saveFixture(`europe-command-${command}`, sanitizeCommandResponse(commandResult.json))
 
   const transactionId = commandResult.json.msgId
   if (!transactionId) {
@@ -335,10 +374,12 @@ async function main() {
         if (record.recordId === transactionId) {
           if (record.result === 'success') {
             console.log(`   SUCCESS after ${(i + 1) * 2}s`)
+            saveFixture(`europe-poll-${command}-success`, sanitizePollRecords(pollResult.json))
             return
           } else if (record.result === 'fail' || record.result === 'non-response') {
             console.log(`   FAILED: ${record.result}`)
             console.log(`   ${JSON.stringify(record, null, 2)}`)
+            saveFixture(`europe-poll-${command}-fail`, sanitizePollRecords(pollResult.json))
             return
           }
         }
