@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   View,
   Text,
+  Animated,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -83,6 +84,22 @@ export default function CommandsScreen() {
   const [acLimit, setAcLimit] = useState(status?.chargeLimit?.acPercent ?? 80);
   const [dcLimit, setDcLimit] = useState(status?.chargeLimit?.dcPercent ?? 80);
   const [activeCmd, setActiveCmd] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'progress' | 'success' | 'error' } | null>(null);
+  const statusAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (statusMessage) {
+      Animated.timing(statusAnim, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+      if (statusMessage.type !== 'progress') {
+        const timer = setTimeout(() => {
+          Animated.timing(statusAnim, { toValue: 0, duration: 300, useNativeDriver: true }).start(() => {
+            setStatusMessage(null);
+          });
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [statusMessage]);
 
   if (!bluelink) {
     return (
@@ -104,8 +121,14 @@ export default function CommandsScreen() {
   const runCommand = async (name: string, fn: () => Promise<boolean>) => {
     clearCommandError();
     setActiveCmd(name);
-    await fn();
+    setStatusMessage({ text: `Sending ${name}...`, type: 'progress' });
+    const success = await fn();
     setActiveCmd(null);
+    if (success) {
+      setStatusMessage({ text: `${name} completed`, type: 'success' });
+    } else {
+      setStatusMessage({ text: `${name} failed`, type: 'error' });
+    }
   };
 
   const config = bluelink.getConfig();
@@ -116,6 +139,49 @@ export default function CommandsScreen() {
     <ScrollView
       style={[styles.scroll, { backgroundColor: t.surface }]}
       contentContainerStyle={styles.container}>
+      {statusMessage && (
+        <Animated.View
+          style={[
+            styles.statusBanner,
+            {
+              opacity: statusAnim,
+              backgroundColor:
+                statusMessage.type === 'progress'
+                  ? t.secondaryContainer
+                  : statusMessage.type === 'success'
+                    ? t.primaryContainer
+                    : t.errorContainer,
+            },
+          ]}>
+          {statusMessage.type === 'progress' ? (
+            <ActivityIndicator
+              size="small"
+              color={t.onSecondaryContainer}
+            />
+          ) : (
+            <MaterialCommunityIcons
+              name={statusMessage.type === 'success' ? 'check-circle' : 'alert-circle'}
+              size={18}
+              color={statusMessage.type === 'success' ? t.primary : t.error}
+            />
+          )}
+          <Text
+            style={[
+              styles.statusText,
+              {
+                color:
+                  statusMessage.type === 'progress'
+                    ? t.onSecondaryContainer
+                    : statusMessage.type === 'success'
+                      ? t.onPrimaryContainer
+                      : t.error,
+              },
+            ]}>
+            {statusMessage.text}
+          </Text>
+        </Animated.View>
+      )}
+
       {commandError && (
         <View style={[styles.errorBanner, { backgroundColor: t.errorContainer }]}>
           <MaterialCommunityIcons name="alert-circle" size={18} color={t.error} />
@@ -348,6 +414,21 @@ const styles = StyleSheet.create({
   sliderLabel: { fontSize: 14, fontWeight: '600', width: 28 },
   slider: { flex: 1, height: 40 },
   sliderValue: { fontSize: 14, fontWeight: '600', width: 40, textAlign: 'right' },
+
+  // Status banner
+  statusBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 8,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    flex: 1,
+  },
 
   // Error
   errorBanner: {
