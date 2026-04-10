@@ -109,7 +109,7 @@ export default function StatusScreen() {
           {/* Battery hero */}
           <View style={[styles.batteryHero, { backgroundColor: t.primaryContainer }]}>
             <Text style={[styles.batteryPercent, { color: t.onPrimaryContainer }]}>
-              {status.soc}%
+              {Math.round(status.soc)}%
             </Text>
             <Text style={[styles.batteryLabel, { color: t.onPrimaryContainer }]}>Battery</Text>
             {status.isCharging && (
@@ -163,7 +163,7 @@ export default function StatusScreen() {
                 />
               </>
             )}
-            <DetailRow label="12V Battery" value={`${status.twelveSoc}%`} t={t} />
+            <DetailRow label="12V Battery" value={`${Math.round(status.twelveSoc)}%`} t={t} />
             {status.odometer ? (
               <DetailRow
                 label="Odometer"
