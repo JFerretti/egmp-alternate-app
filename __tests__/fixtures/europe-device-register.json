@@ -1,5 +1,8 @@
 {
+  "retCode": "S",
+  "resCode": "0000",
   "resMsg": {
-    "deviceId": "fixture-device-id-abc123"
-  }
+    "deviceId": "9c24d169-4aaf-4eda-894c-4f7c737726d1"
+  },
+  "msgId": "fa4b4350-34fe-11f1-871f-1bffc43df30f"
 }

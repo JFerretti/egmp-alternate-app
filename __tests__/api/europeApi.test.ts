@@ -29,6 +29,7 @@ const TEST_CONFIG: Config = {
     region: 'europe',
     refreshToken: 'fixture-refresh-token',
   },
+  vin: 'KMXXXXXXXXXXXXXXX',
   tempType: 'C',
   distanceUnit: 'km',
   climateTempWarm: 21.5,
@@ -85,7 +86,7 @@ describe('BluelinkEurope (fixtures)', () => {
       expect(cached.car.vin).toBe('KMXXXXXXXXXXXXXXX')
       expect(cached.car.nickName).toBe('My IONIQ 5')
       expect(cached.car.modelName).toBe('IONIQ 5')
-      expect(cached.car.modelYear).toBe('2024')
+      expect(cached.car.modelYear).toBe('2025')
       expect(cached.car.europeccs2).toBe(1)
     })
   })
@@ -93,35 +94,36 @@ describe('BluelinkEurope (fixtures)', () => {
   describe('status parsing', () => {
     it('parses battery SOC from fixture', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.soc).toBe(78)
+      expect(cached.status.soc).toBe(79.5)
     })
 
     it('parses 12V battery level', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.twelveSoc).toBe(92)
+      expect(cached.status.twelveSoc).toBe(81)
     })
 
-    it('parses charging state', () => {
+    it('parses charging state (not charging in fixture)', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.isCharging).toBe(true)
-      expect(cached.status.isPluggedIn).toBe(true)
-      expect(cached.status.chargingPower).toBe(7.2)
-      expect(cached.status.remainingChargeTimeMins).toBe(45)
+      // ConnectorFastening.State=0 and RemainTime=0 in fixture
+      expect(cached.status.isCharging).toBe(false)
+      expect(cached.status.isPluggedIn).toBe(false)
+      expect(cached.status.chargingPower).toBe(0)
+      expect(cached.status.remainingChargeTimeMins).toBe(0)
     })
 
     it('parses odometer in km', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.odometer).toBe(12500)
+      expect(cached.status.odometer).toBe(Math.floor(14576.9))
     })
 
     it('parses range in km', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.range).toBe(320)
+      expect(cached.status.range).toBe(Math.floor(237.364385))
     })
 
     it('parses charge limits', () => {
       const cached = bluelink.getCachedStatus()
-      expect(cached.status.chargeLimit).toEqual({ acPercent: 80, dcPercent: 80 })
+      expect(cached.status.chargeLimit).toEqual({ acPercent: 60, dcPercent: 90 })
     })
 
     it('parses door lock status', () => {
@@ -149,13 +151,12 @@ describe('BluelinkEurope (fixtures)', () => {
     it('converts odometer to miles when configured', async () => {
       fetchMock.restore()
       const milesFetchMock = installFetchMock()
-      const milesConfig = { ...TEST_CONFIG, distanceUnit: 'mi' as const }
+      const milesConfig: Config = { ...TEST_CONFIG, distanceUnit: 'mi' }
       const milesBluelink = await BluelinkEurope.init(milesConfig, true)
 
       const cached = milesBluelink.getCachedStatus()
-      // 12500 km * 0.621371 = 7766.something, floored
-      expect(cached.status.odometer).toBe(Math.floor(12500 * 0.621371))
-      expect(cached.status.range).toBe(Math.floor(320 * 0.621371))
+      expect(cached.status.odometer).toBe(Math.floor(14576.9 * 0.621371))
+      expect(cached.status.range).toBe(Math.floor(237.364385 * 0.621371))
 
       milesFetchMock.restore()
     })
@@ -166,7 +167,7 @@ describe('BluelinkEurope (fixtures)', () => {
       const result = await bluelink.getStatus(false, true)
       expect(result.car).toBeDefined()
       expect(result.status).toBeDefined()
-      expect(result.status.soc).toBe(78)
+      expect(result.status.soc).toBe(79.5)
 
       const statusCalls = fetchMock.callsTo(/carstatus\/latest/)
       // One from init + one from getStatus

@@ -1,18 +1,54 @@
 {
+  "retCode": "S",
+  "resCode": "0000",
   "resMsg": {
     "vehicles": [
       {
-        "vehicleId": "fixture-vehicle-id-001",
         "vin": "KMXXXXXXXXXXXXXXX",
-        "nickname": "My IONIQ 5",
+        "vehicleId": "fixture-vehicle-id-001",
         "vehicleName": "IONIQ 5",
-        "year": "2024",
-        "ccuCCS2ProtocolSupport": 1,
+        "type": "EV",
+        "tmuNum": "-",
+        "nickname": "My IONIQ 5",
+        "year": "2025",
+        "master": true,
+        "carShare": 1,
+        "regDate": "2026-03-09 13:40:17.480",
+        "personalFlag": "4",
         "detailInfo": {
-          "outColor": "Abyss Black Pearl",
-          "saleCarmdlCd": "Long Range AWD"
-        }
+          "inColor": "NNB",
+          "outColor": "R2P",
+          "prodCarmdlCd": "GI",
+          "saleCarmdlCd": "GI",
+          "bodyType": "2",
+          "saleCarmdlEnNm": "IONIQ 5"
+        },
+        "protocolType": 1,
+        "ccuCCS2ProtocolSupport": 1
+      },
+      {
+        "vin": "KMXXXXXXXXXXXXXXX",
+        "vehicleId": "fixture-vehicle-id-001",
+        "vehicleName": "IONIQ 5",
+        "type": "EV",
+        "tmuNum": "-",
+        "nickname": "My IONIQ 5",
+        "year": "2022",
+        "master": true,
+        "carShare": 0,
+        "regDate": "2025-11-15 14:20:53.440",
+        "detailInfo": {
+          "inColor": "NNB",
+          "outColor": "U3P",
+          "prodCarmdlCd": "GI",
+          "saleCarmdlCd": "GI",
+          "bodyType": "2",
+          "saleCarmdlEnNm": "IONIQ 5"
+        },
+        "protocolType": 0,
+        "ccuCCS2ProtocolSupport": 0
       }
     ]
-  }
+  },
+  "msgId": "fa6c11c0-34fe-11f1-871f-4e2fab693719"
 }
