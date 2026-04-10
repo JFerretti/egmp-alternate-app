@@ -14,6 +14,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { ChipGroup } from '@/components/ChipGroup';
 import { Config, DEFAULT_CONFIG } from '@/src/config/types';
 import { loadConfig, saveConfig } from '@/src/storage/configStore';
+import { useCarStore } from '@/src/store/carStore';
 
 export default function PreferencesScreen() {
   const t = useTheme();
@@ -39,8 +40,11 @@ export default function PreferencesScreen() {
     }
   }, [saved]);
 
+  const updateConfig = useCarStore((s) => s.updateConfig);
+
   const handleSave = async () => {
     await saveConfig(config);
+    await updateConfig(config);
     setSaved(true);
   };
 
