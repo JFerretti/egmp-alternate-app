@@ -7,6 +7,8 @@ import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 
 import { md3 } from '@/constants/Colors';
+import { loadConfig } from '@/src/storage/configStore';
+import { useCarStore } from '@/src/store/carStore';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -59,6 +61,19 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'light' ? CustomLight : CustomDark;
+
+  // Auto-reconnect if saved config exists but store is disconnected
+  const { bluelink, connect, isLoading } = useCarStore();
+
+  useEffect(() => {
+    if (!bluelink && !isLoading) {
+      loadConfig().then((config) => {
+        if (config && config.auth.region) {
+          connect(config);
+        }
+      });
+    }
+  }, []);
 
   return (
     <ThemeProvider value={theme}>
