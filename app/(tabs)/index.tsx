@@ -58,6 +58,25 @@ function DetailRow({
   );
 }
 
+function formatChargeTime(mins: number): string {
+  if (mins <= 0) return 'Calculating...';
+  const hours = Math.floor(mins / 60);
+  const remaining = mins % 60;
+  if (hours === 0) return `${remaining}m`;
+  if (remaining === 0) return `${hours}h`;
+  return `${hours}h ${remaining}m`;
+}
+
+function getChargeTarget(status: {
+  chargingPower: number;
+  chargeLimit?: { acPercent: number; dcPercent: number };
+}): number {
+  if (!status.chargeLimit) return 100;
+  // DC charging typically uses higher power; use DC limit if power suggests DC
+  if (status.chargingPower > 11) return status.chargeLimit.dcPercent;
+  return status.chargeLimit.acPercent;
+}
+
 export default function StatusScreen() {
   const router = useRouter();
   const t = useTheme();
@@ -127,6 +146,50 @@ export default function StatusScreen() {
               </View>
             )}
           </View>
+
+          {/* Charging section — only visible while charging */}
+          {status.isCharging && (
+            <View style={[styles.chargingCard, { backgroundColor: t.tertiaryContainer }]}>
+              <View style={styles.chargingCardHeader}>
+                <MaterialCommunityIcons
+                  name="lightning-bolt"
+                  size={24}
+                  color={t.onTertiaryContainer}
+                />
+                <Text style={[styles.chargingCardTitle, { color: t.onTertiaryContainer }]}>
+                  Charging
+                </Text>
+              </View>
+
+              <View style={styles.chargingStats}>
+                <View style={styles.chargingStat}>
+                  <Text style={[styles.chargingStatValue, { color: t.onTertiaryContainer }]}>
+                    {status.chargingPower > 0 ? `${status.chargingPower} kW` : '—'}
+                  </Text>
+                  <Text style={[styles.chargingStatLabel, { color: t.onTertiaryContainer }]}>
+                    Power
+                  </Text>
+                </View>
+
+                <View style={styles.chargingStat}>
+                  <Text style={[styles.chargingStatValue, { color: t.onTertiaryContainer }]}>
+                    {formatChargeTime(status.remainingChargeTimeMins)}
+                  </Text>
+                  <Text style={[styles.chargingStatLabel, { color: t.onTertiaryContainer }]}>
+                    Remaining
+                  </Text>
+                </View>
+              </View>
+
+              {status.chargeLimit && (
+                <View style={styles.chargingProgress}>
+                  <Text style={[styles.chargingProgressText, { color: t.onTertiaryContainer }]}>
+                    {Math.round(status.soc)}% → {getChargeTarget(status)}%
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Quick status grid */}
           <View style={styles.statusGrid}>
@@ -249,6 +312,30 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   chargingText: { fontSize: 14, fontWeight: '600' },
+
+  // Charging card
+  chargingCard: {
+    borderRadius: 24,
+    padding: 20,
+    marginBottom: 20,
+  },
+  chargingCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  chargingCardTitle: { fontSize: 18, fontWeight: '700', letterSpacing: 0.1 },
+  chargingStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 12,
+  },
+  chargingStat: { alignItems: 'center', gap: 4 },
+  chargingStatValue: { fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
+  chargingStatLabel: { fontSize: 12, fontWeight: '500', opacity: 0.8, letterSpacing: 0.3 },
+  chargingProgress: { alignItems: 'center', marginTop: 4 },
+  chargingProgressText: { fontSize: 15, fontWeight: '600', letterSpacing: 0.1 },
 
   // Status grid
   statusGrid: {
