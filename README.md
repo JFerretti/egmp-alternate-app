@@ -37,19 +37,23 @@ Use direct credential-based login (username/password entered in the app).
 
 ## Current Status
 
-### Working
+### Working & Tested
 
 - Hyundai Europe authentication via refresh token
 - Token refresh and automatic rotation
 - Vehicle discovery (single and multi-vehicle accounts with selection UI)
 - Vehicle status retrieval (battery SOC, range, charging state, lock status, climate, odometer)
+- Remote commands: lock, unlock, start charge, stop charge, climate on/off, set charge limit
+- Charging status display on home screen (charge rate, ETA, progress to target)
+- Live unit preference updates (distance/temperature changes apply without reconnect)
+- Auto-reconnect with status loading on app restart
 - Secure credential and token storage (expo-secure-store)
 - Settings UI with auth-method-aware fields per region
 - Reset functionality to clear all cached data
 
 ### Not Yet Tested
 
-- Remote commands: lock/unlock, start/stop charge, climate control, charge limit
+- Climate temperature accuracy (whether hvacTemp sent with start command is applied by the car)
 - Kia Europe WebView OAuth flow
 - Non-Europe regions (Canada, USA, India, Australia)
 - Token expiry edge cases and long-term refresh token rotation
