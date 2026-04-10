@@ -667,7 +667,7 @@ export class BluelinkEurope extends Bluelink {
       }
     }
 
-    console.error('[Europe] getAuthCode: deviceId=' + (deviceId ? 'present' : 'MISSING') + ', pin=' + (this.config.auth.pin ? 'present' : 'MISSING'))
+    console.log('[Europe] getAuthCode: deviceId=' + (deviceId ? 'present' : 'MISSING') + ', pin=' + (this.config.auth.pin ? 'present' : 'MISSING'))
 
     if (!deviceId || !this.config.auth.pin) {
       throw Error(`Cannot send command: ${!deviceId ? 'deviceId is missing' : 'PIN is missing'}. Please reconnect your vehicle.`)
