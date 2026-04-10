@@ -82,7 +82,17 @@ export const useCarStore = create<CarStore>((set, get) => ({
         set({ isLoading: false, error: 'No vehicle found on your account.' })
         return
       }
-      set({ bluelink, car, status, isLoading: false })
+      set({ bluelink, car, status, isLoading: !status })
+      // If cached status is missing, fetch it now
+      if (!status) {
+        try {
+          const fresh = await bluelink.getStatus(false, true, true)
+          set({ car: fresh.car, status: fresh.status, isLoading: false })
+        } catch (e: any) {
+          console.error('[Bluelink] Initial status fetch failed:', e)
+          set({ isLoading: false, error: friendlyError(e) })
+        }
+      }
     } catch (e: any) {
       console.error('[Bluelink] Connect failed:', e)
       set({ isLoading: false, error: friendlyError(e) })

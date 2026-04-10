@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  ActivityIndicator,
   StyleSheet,
   ScrollView,
   RefreshControl,
@@ -88,7 +89,7 @@ export default function StatusScreen() {
     }
   }, [bluelink, car]);
 
-  if (!bluelink) {
+  if (!bluelink && !isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: t.surface }]}>
         <MaterialCommunityIcons name="car-off" size={64} color={t.outlineVariant} />
@@ -101,6 +102,17 @@ export default function StatusScreen() {
           onPress={() => router.push('/settings')}>
           <Text style={[styles.filledButtonText, { color: t.onPrimary }]}>Open Settings</Text>
         </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!bluelink || (!status && !error)) {
+    return (
+      <View style={[styles.center, { backgroundColor: t.surface }]}>
+        <ActivityIndicator size="large" color={t.primary} />
+        <Text style={[styles.emptySubtitle, { color: t.onSurfaceVariant }]}>
+          Connecting to your vehicle…
+        </Text>
       </View>
     );
   }
