@@ -1,8 +1,21 @@
 # Agent Instructions
 
+## Project
+
+React Native (Expo) app for monitoring/controlling Hyundai/Kia EVs via Bluelink API. See `README.md` for full details.
+
+### Key Areas
+
+- **Auth layer** (`src/api/regions/`) — Region-specific authentication. Hyundai EU uses refresh token flow, Kia EU uses WebView OAuth, others use direct credentials.
+- **Base API** (`src/api/base.ts`) — Shared auth, caching, and HTTP logic. All region classes extend this.
+- **State** (`src/store/carStore.ts`) — Zustand store managing connection lifecycle, car selection, and command dispatch.
+- **UI** (`app/`) — Expo Router screens. Settings screen handles auth config and car selection.
+
+## Issue Tracking
+
 This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
 
-## Quick Reference
+### Quick Reference
 
 ```bash
 bd ready              # Find available work

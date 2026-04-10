@@ -50,20 +50,40 @@ bd close <id>         # Complete work
 <!-- END BEADS INTEGRATION -->
 
 
-## Build & Test
-
-_Add your build and test commands here_
+## Build & Dev
 
 ```bash
-# Example:
-# npm install
-# npm test
+npm install
+npx expo start --android   # or --ios
+```
+
+Monitor auth flow logs:
+```bash
+adb logcat -v time | grep -E '\[(Bluelink|Europe|OAuth)\]'
 ```
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+React Native (Expo) app for monitoring Hyundai/Kia EVs via Bluelink/Kia Connect APIs. Ported from the [egmp-bluelink-scriptable](https://github.com/andyfase/egmp-bluelink-scriptable) iOS widget.
+
+- **`app/`** — Expo Router screens (tabs: status, commands, settings)
+- **`src/api/`** — Bluelink API layer with per-region implementations
+  - `base.ts` — Base class (auth, caching, HTTP)
+  - `regions/europe.ts` — Hyundai (refresh token) + Kia (WebView OAuth)
+  - `regions/` — canada, usa, usa-kia, india, australia
+- **`src/store/carStore.ts`** — Zustand store (connection, commands, state)
+- **`src/config/types.ts`** — Config types, `AuthMethod` routing
+- **`src/storage/`** — Config persistence + secure storage adapter
+
+### Auth Methods by Region
+- **Hyundai Europe**: Refresh token (pasted from external tool, no in-app login)
+- **Kia Europe**: WebView OAuth
+- **All other regions**: Direct credentials (username/password)
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- TypeScript throughout
+- Expo Router file-based navigation
+- expo-secure-store for credentials/tokens
+- Zustand for state management
+- Console logging with `[Bluelink]`, `[Europe]`, `[OAuth]` tags for debugging
