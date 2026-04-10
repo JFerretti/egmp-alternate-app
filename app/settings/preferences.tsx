@@ -82,16 +82,7 @@ export default function PreferencesScreen() {
           t={t}
         />
 
-        <ChipGroup
-          label="Debug Logging"
-          value={config.debugLogging ? 'on' : 'off'}
-          options={[
-            { label: 'Off', value: 'off' },
-            { label: 'On', value: 'on' },
-          ]}
-          onSelect={(v) => setConfig((prev) => ({ ...prev, debugLogging: v === 'on' }))}
-          t={t}
-        />
+
       </View>
 
       {/* Save button */}

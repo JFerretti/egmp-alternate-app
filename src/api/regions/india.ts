@@ -149,7 +149,7 @@ export class BluelinkIndia extends Bluelink {
     })
 
     if (!this.requestResponseValid(respSignin.resp, respSignin.json).valid) {
-      if (this.config.debugLogging) console.error(`[IN] Failed to sign in`)
+      console.error(`[IN] Failed to sign in`)
       return undefined
     }
 
@@ -222,13 +222,13 @@ export class BluelinkIndia extends Bluelink {
 
   protected async refreshTokens(): Promise<BluelinkTokens | undefined> {
     if (!this.cache.token.refreshToken) {
-      if (this.config.debugLogging) console.log('[IN] No refresh token - cannot refresh')
+      console.log('[IN] No refresh token - cannot refresh')
       return undefined
     }
 
     const refreshData = `grant_type=refresh_token&redirect_uri=https%3A%2F%2Fwww.getpostman.com%2Foauth2%2Fcallback&refresh_token=${this.cache.token.refreshToken}`
 
-    if (this.config.debugLogging) console.log('[IN] Refreshing tokens')
+    console.log('[IN] Refreshing tokens')
     const resp = await this.request({
       url: `${this.apiDomain}/api/v1/user/oauth2/token`,
       data: refreshData,
@@ -258,7 +258,7 @@ export class BluelinkIndia extends Bluelink {
       }
     }
 
-    if (this.config.debugLogging) console.error(`[IN] Refresh Failed: ${JSON.stringify(resp.json)}`)
+    console.error(`[IN] Refresh Failed: ${JSON.stringify(resp.json)}`)
     return undefined
   }
 
@@ -280,7 +280,7 @@ export class BluelinkIndia extends Bluelink {
       return resp.json.resMsg.deviceId
     }
 
-    if (this.config.debugLogging) console.error(`[IN] Failed to fetch Device ID: ${JSON.stringify(resp.json)}`)
+    console.error(`[IN] Failed to fetch Device ID: ${JSON.stringify(resp.json)}`)
     return undefined
   }
 
@@ -456,7 +456,7 @@ export class BluelinkIndia extends Bluelink {
               case 'non-response':
                 return { isSuccess: false, data: record }
               default:
-                if (this.config.debugLogging) console.log(`[IN] Waiting for command completion: ${JSON.stringify(record)}`)
+                console.log(`[IN] Waiting for command completion: ${JSON.stringify(record)}`)
                 break
             }
           }
@@ -597,7 +597,7 @@ export class BluelinkIndia extends Bluelink {
     })
 
     if (!this.requestResponseValid(resp.resp, resp.json).valid) {
-      if (this.config.debugLogging) console.error(`[IN] Failed to get maintenance alerts: ${JSON.stringify(resp.json)}`)
+      console.error(`[IN] Failed to get maintenance alerts: ${JSON.stringify(resp.json)}`)
       return []
     }
     return resp.json.resMsg
@@ -611,7 +611,7 @@ export class BluelinkIndia extends Bluelink {
     })
 
     if (!this.requestResponseValid(resp.resp, resp.json).valid) {
-      if (this.config.debugLogging) console.error(`[IN] Failed to get location: ${JSON.stringify(resp.json)}`)
+      console.error(`[IN] Failed to get location: ${JSON.stringify(resp.json)}`)
       return undefined
     }
     return resp.json.resMsg

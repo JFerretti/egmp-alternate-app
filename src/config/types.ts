@@ -29,7 +29,6 @@ export interface Config {
   climateSeatLevel: string
   mfaPreference: 'sms' | 'email'
   carColor: string
-  debugLogging: boolean
   vin?: string
 }
 
@@ -47,7 +46,6 @@ export const DEFAULT_CONFIG: Config = {
   climateTempCold: 19,
   climateTempWarm: 21.5,
   climateSeatLevel: 'Off',
-  debugLogging: false,
   vin: undefined,
   carColor: 'white',
 }
