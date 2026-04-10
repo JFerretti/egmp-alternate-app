@@ -4,7 +4,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   View,
   Text,
 } from 'react-native';
@@ -105,18 +104,8 @@ export default function CommandsScreen() {
   const runCommand = async (name: string, fn: () => Promise<boolean>) => {
     clearCommandError();
     setActiveCmd(name);
-    const success = await fn();
+    await fn();
     setActiveCmd(null);
-    if (success) {
-      Alert.alert('Success', `${name} completed.`);
-    }
-  };
-
-  const confirmAndRun = (name: string, fn: () => Promise<boolean>) => {
-    Alert.alert('Confirm', `Send ${name} command?`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Send', onPress: () => runCommand(name, fn) },
-    ]);
   };
 
   const config = bluelink.getConfig();
@@ -140,7 +129,7 @@ export default function CommandsScreen() {
         <CommandTile
           icon="lock"
           label="Lock"
-          onPress={() => confirmAndRun('Lock', sendLock)}
+          onPress={() => runCommand('Lock', sendLock)}
           disabled={isCommandLoading}
           loading={activeCmd === 'Lock'}
           variant="filled"
@@ -149,7 +138,7 @@ export default function CommandsScreen() {
         <CommandTile
           icon="lock-open-variant"
           label="Unlock"
-          onPress={() => confirmAndRun('Unlock', sendUnlock)}
+          onPress={() => runCommand('Unlock', sendUnlock)}
           disabled={isCommandLoading}
           loading={activeCmd === 'Unlock'}
           variant="outline"
@@ -163,7 +152,7 @@ export default function CommandsScreen() {
         <CommandTile
           icon="ev-station"
           label="Start Charge"
-          onPress={() => confirmAndRun('Start Charge', sendStartCharge)}
+          onPress={() => runCommand('Start Charge', sendStartCharge)}
           disabled={isCommandLoading}
           loading={activeCmd === 'Start Charge'}
           variant="tonal"
@@ -172,7 +161,7 @@ export default function CommandsScreen() {
         <CommandTile
           icon="ev-plug-type2"
           label="Stop Charge"
-          onPress={() => confirmAndRun('Stop Charge', sendStopCharge)}
+          onPress={() => runCommand('Stop Charge', sendStopCharge)}
           disabled={isCommandLoading}
           loading={activeCmd === 'Stop Charge'}
           variant="outline"
@@ -187,7 +176,7 @@ export default function CommandsScreen() {
           icon="fire"
           label={`Warm (${warmTemp}°)`}
           onPress={() =>
-            confirmAndRun('Climate Warm', () =>
+            runCommand('Climate Warm', () =>
               sendClimateOn({
                 enable: true,
                 frontDefrost: false,
@@ -207,7 +196,7 @@ export default function CommandsScreen() {
           icon="snowflake"
           label={`Cool (${coldTemp}°)`}
           onPress={() =>
-            confirmAndRun('Climate Cool', () =>
+            runCommand('Climate Cool', () =>
               sendClimateOn({
                 enable: true,
                 frontDefrost: false,
@@ -229,7 +218,7 @@ export default function CommandsScreen() {
           icon="car-defrost-front"
           label="Defrost"
           onPress={() =>
-            confirmAndRun('Defrost', () =>
+            runCommand('Defrost', () =>
               sendClimateOn({
                 enable: true,
                 frontDefrost: true,
@@ -248,7 +237,7 @@ export default function CommandsScreen() {
         <CommandTile
           icon="power"
           label="Climate Off"
-          onPress={() => confirmAndRun('Climate Off', sendClimateOff)}
+          onPress={() => runCommand('Climate Off', sendClimateOff)}
           disabled={isCommandLoading}
           loading={activeCmd === 'Climate Off'}
           variant="outline"
@@ -296,7 +285,7 @@ export default function CommandsScreen() {
             isCommandLoading && styles.tileDisabled,
           ]}
           onPress={() =>
-            confirmAndRun('Set Charge Limit', () =>
+            runCommand('Set Charge Limit', () =>
               sendSetChargeLimit({ acPercent: acLimit, dcPercent: dcLimit }),
             )
           }
