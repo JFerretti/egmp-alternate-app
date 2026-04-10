@@ -230,11 +230,20 @@ export class BluelinkEurope extends Bluelink {
         this.config.auth.refreshToken = newRefreshToken
         saveConfig(this.config).catch(() => {})
       }
+      // Reuse cached deviceId on refresh; only fetch a new one on initial login
+      let authId = this.cache?.token?.authId
+      if (!authId) {
+        console.log('[Europe] No cached deviceId, fetching new one via notifications/register')
+        authId = await this.getDeviceId()
+        if (!authId) {
+          console.error('[Europe] Failed to obtain deviceId — commands will fail until reconnect')
+        }
+      }
       return {
         accessToken: `Bearer ${resp.json.access_token}`,
         refreshToken: newRefreshToken,
         expiry: Math.floor(Date.now() / 1000) + Number(resp.json.expires_in),
-        authId: this.cache?.token?.authId ?? await this.getDeviceId(),
+        authId,
       }
     }
     return undefined
@@ -500,8 +509,15 @@ export class BluelinkEurope extends Bluelink {
       headers: { Stamp: this.getStamp(this.apiConfig.appId, this.apiConfig.authCfb) },
     })
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
-      return resp.json.resMsg.deviceId
+      const deviceId = resp.json.resMsg?.deviceId
+      if (deviceId) {
+        console.log('[Europe] Obtained deviceId from notifications/register')
+      } else {
+        console.error('[Europe] notifications/register succeeded but deviceId missing from response')
+      }
+      return deviceId
     }
+    console.error(`[Europe] Failed to register for notifications (deviceId): status=${resp.resp.statusCode}`)
     return undefined
   }
 
@@ -638,10 +654,28 @@ export class BluelinkEurope extends Bluelink {
     if (this.controlToken && this.controlToken.expiry > Date.now()) {
       return this.controlToken.token
     }
+
+    // Ensure deviceId exists — if missing from cache, attempt to obtain one
+    let deviceId = this.cache?.token?.authId
+    if (!deviceId) {
+      console.error('[Europe] getAuthCode: deviceId missing from cache, attempting to obtain one')
+      deviceId = await this.getDeviceId()
+      if (deviceId && this.cache?.token) {
+        this.cache.token.authId = deviceId
+        await this.saveCache()
+      }
+    }
+
+    console.error('[Europe] getAuthCode: deviceId=' + (deviceId ? 'present' : 'MISSING') + ', pin=' + (this.config.auth.pin ? 'present' : 'MISSING'))
+
+    if (!deviceId || !this.config.auth.pin) {
+      throw Error(`Cannot send command: ${!deviceId ? 'deviceId is missing' : 'PIN is missing'}. Please reconnect your vehicle.`)
+    }
+
     const resp = await this.request({
       url: `${this.apiDomain}/api/v1/user/pin`,
       method: 'PUT',
-      data: JSON.stringify({ pin: this.config.auth.pin, deviceId: this.cache.token.authId }),
+      data: JSON.stringify({ pin: this.config.auth.pin, deviceId }),
       headers: { vehicleId: id, Stamp: this.getStamp(this.apiConfig.appId, this.apiConfig.authCfb), ccuCCS2ProtocolSupport: this.getCCS2Header() },
       validResponseFunction: this.requestResponseValid.bind(this),
     })
