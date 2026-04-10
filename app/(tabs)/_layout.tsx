@@ -1,19 +1,30 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Tabs, useRouter } from 'expo-router';
+import { Tabs, useRouter, usePathname } from 'expo-router';
 
 import { useTheme } from '@/hooks/useTheme';
 
-export default function TabLayout() {
-  const t = useTheme();
+function SettingsButton({ color }: { color: string }) {
   const router = useRouter();
-
-  const settingsButton = () => (
-    <TouchableOpacity onPress={() => router.push('/settings')} style={{ marginRight: 16 }}>
-      <MaterialCommunityIcons name="cog-outline" size={24} color={t.onSurface} />
+  const pathname = usePathname();
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        if (pathname === '/settings') {
+          router.back();
+        } else {
+          router.push('/settings');
+        }
+      }}
+      style={{ marginRight: 16 }}>
+      <MaterialCommunityIcons name="cog-outline" size={24} color={color} />
     </TouchableOpacity>
   );
+}
+
+export default function TabLayout() {
+  const t = useTheme();
 
   return (
     <Tabs
@@ -44,7 +55,7 @@ export default function TabLayout() {
           fontWeight: '600',
           fontSize: 20,
         },
-        headerRight: settingsButton,
+        headerRight: () => <SettingsButton color={t.onSurface} />,
       }}>
       <Tabs.Screen
         name="index"
