@@ -80,6 +80,14 @@ React Native (Expo) app for monitoring Hyundai/Kia EVs via Bluelink/Kia Connect 
 - **Kia Europe**: WebView OAuth
 - **All other regions**: Direct credentials (username/password)
 
+## Agent Teams
+
+When spawning agents in worktrees, always use `mode: "bypassPermissions"`. Worktrees are isolated and disposable — permission prompts just slow things down.
+
+## Quality Gates
+
+Before committing, `npx tsc --noEmit` runs automatically via a PreToolUse hook. If TypeScript fails, the commit is blocked. Fix type errors before retrying.
+
 ## Conventions & Patterns
 
 - TypeScript throughout
@@ -87,3 +95,4 @@ React Native (Expo) app for monitoring Hyundai/Kia EVs via Bluelink/Kia Connect 
 - expo-secure-store for credentials/tokens
 - Zustand for state management
 - Console logging with `[Bluelink]`, `[Europe]`, `[OAuth]` tags for debugging
+- GitHub PRs use squash merges only (`gh pr merge --squash --delete-branch`)
