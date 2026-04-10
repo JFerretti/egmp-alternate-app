@@ -46,8 +46,8 @@ if (!COMMAND || !VALID_COMMANDS.includes(COMMAND as Command)) {
   process.exit(1)
 }
 
-if (COMMAND !== 'status' && !PIN) {
-  console.error('Error: BLUELINK_PIN must be set for command operations')
+if (COMMAND !== 'status' && COMMAND !== 'charge-limit' && !PIN) {
+  console.error('Error: BLUELINK_PIN must be set for command operations (except charge-limit)')
   process.exit(1)
 }
 
@@ -254,27 +254,32 @@ async function main() {
     return
   }
 
-  // Step 5: Get auth code (PIN verification)
-  console.log('5. Getting auth code (PIN verification)...')
-  const pinResult = await apiRequest(
-    `${API_CONFIG.apiDomain}/api/v1/user/pin`,
-    {
-      method: 'PUT',
-      headers: {
-        ...commonHeaders(accessToken, deviceId),
-        vehicleId,
-        ccuCCS2ProtocolSupport: ccs2.toString(),
-      },
-      body: JSON.stringify({ pin: PIN, deviceId }),
+  // Step 5: Get auth code (PIN verification) — not needed for charge-limit
+  let controlToken = ''
+  if (command !== 'charge-limit') {
+    console.log('5. Getting auth code (PIN verification)...')
+    const pinResult = await apiRequest(
+      `${API_CONFIG.apiDomain}/api/v1/user/pin`,
+      {
+        method: 'PUT',
+        headers: {
+          ...commonHeaders(accessToken, deviceId),
+          vehicleId,
+          ccuCCS2ProtocolSupport: ccs2.toString(),
+        },
+        body: JSON.stringify({ pin: PIN, deviceId }),
+      }
+    )
+    if (pinResult.status !== 200 || !pinResult.json.controlToken) {
+      console.error('   FAILED:', JSON.stringify(pinResult.json, null, 2))
+      process.exit(1)
     }
-  )
-  if (pinResult.status !== 200 || !pinResult.json.controlToken) {
-    console.error('   FAILED:', JSON.stringify(pinResult.json, null, 2))
-    process.exit(1)
+    controlToken = `Bearer ${pinResult.json.controlToken}`
+    console.log(`   OK — control token acquired (expires in ${pinResult.json.expiresTime}s)`)
+    saveFixture('europe-auth-code', sanitizeControlToken(pinResult.json))
+  } else {
+    console.log('5. Skipping PIN — charge-limit uses regular access token')
   }
-  const controlToken = `Bearer ${pinResult.json.controlToken}`
-  console.log(`   OK — control token acquired (expires in ${pinResult.json.expiresTime}s)`)
-  saveFixture('europe-auth-code', sanitizeControlToken(pinResult.json))
 
   // Step 6: Build and send command
   let commandUrl: string
@@ -334,10 +339,13 @@ async function main() {
     return
   }
 
+  // charge-limit uses the regular access token, not the control token
+  const authForCommand = command === 'charge-limit' ? accessToken : controlToken
+
   const commandResult = await apiRequest(commandUrl!, {
     method: 'POST',
     headers: {
-      ...commonHeaders(controlToken, deviceId),
+      ...commonHeaders(authForCommand, deviceId),
       Stamp: getStamp(),
       ccuCCS2ProtocolSupport: ccs2.toString(),
     },

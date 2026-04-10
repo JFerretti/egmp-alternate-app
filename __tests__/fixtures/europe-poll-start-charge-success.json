@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "c80ed342-cc2e-4d73-9fdc-8e00b288f84e",
+      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/charge/start",
+      "result": "success",
+      "record": "[Success] Remote charging started.",
+      "createdAt": "2026-04-10 19:29:20.629",
+      "updatedAt": "2026-04-10 19:29:23.232"
+    }
+  ],
+  "msgId": "d1c6cef0-3502-11f1-871f-a09367def060"
+}

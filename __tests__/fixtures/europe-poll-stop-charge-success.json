@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "ce9652cd-92c3-46e2-ab24-aeb6b6dd8e26",
+      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/charge/stop",
+      "result": "success",
+      "record": "[Success] Charging cancelled.",
+      "createdAt": "2026-04-10 19:29:38.809",
+      "updatedAt": "2026-04-10 19:29:41.388"
+    }
+  ],
+  "msgId": "dc888fe0-3502-11f1-871f-47fcbcd3dd1f"
+}

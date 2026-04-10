@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "39f48183-84f5-418d-881f-02164791ae01",
+      "vehicleId": "6a738251-ab68-4a33-b55c-2c1b0741fb9c",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/door/close",
+      "result": "success",
+      "record": "[Success] Doors locked.",
+      "createdAt": "2026-04-10 19:20:03.639",
+      "updatedAt": "2026-04-10 19:20:06.313"
+    }
+  ],
+  "msgId": "85a8aee0-3501-11f1-bda4-61cb6f9f95cb"
+}

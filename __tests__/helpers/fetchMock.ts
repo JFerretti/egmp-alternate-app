@@ -40,6 +40,11 @@ const europeRoutes: FetchRoute[] = [
     response: carStatusFixture,
   },
   {
+    // Force-update status endpoint (used by setChargeLimit and forceUpdate flows)
+    pattern: /\/api\/v1\/spa\/vehicles\/[^/]+\/ccs2\/carstatus$/,
+    response: carStatusFixture,
+  },
+  {
     pattern: /\/api\/v1\/spa\/vehicles$/,
     response: vehiclesFixture,
   },
@@ -57,22 +62,23 @@ function buildCommandRoutes(): FetchRoute[] {
     routes.push({ pattern: /\/api\/v1\/user\/pin/, response: authCode })
   }
 
-  // Command fixtures: europe-command-lock, europe-command-unlock, etc.
-  const commandMap: Record<string, RegExp> = {
-    'lock': /\/ccs2\/control\/door/,
-    'unlock': /\/ccs2\/control\/door/,
-    'start-charge': /\/ccs2\/control\/charge/,
-    'stop-charge': /\/ccs2\/control\/charge/,
-    'climate-on': /\/ccs2\/control\/temperature/,
-    'climate-off': /\/ccs2\/control\/temperature/,
-    'charge-limit': /\/charge\/target/,
-  }
+  // Command fixtures grouped by endpoint — commands sharing an endpoint
+  // (e.g. lock/unlock both use /control/door) have the same response shape,
+  // so we load whichever fixture exists first for that endpoint.
+  const endpointGroups: { pattern: RegExp; commands: string[] }[] = [
+    { pattern: /\/ccs2\/control\/door/, commands: ['lock', 'unlock'] },
+    { pattern: /\/ccs2\/control\/charge/, commands: ['start-charge', 'stop-charge'] },
+    { pattern: /\/ccs2\/control\/temperature/, commands: ['climate-on', 'climate-off'] },
+    { pattern: /\/charge\/target/, commands: ['charge-limit'] },
+  ]
 
-  for (const [cmd, pattern] of Object.entries(commandMap)) {
-    const fixture = loadOptionalFixture(`europe-command-${cmd}`)
-    if (fixture) {
-      routes.push({ pattern, response: fixture })
-      break // Only one command fixture per endpoint pattern
+  for (const { pattern, commands } of endpointGroups) {
+    for (const cmd of commands) {
+      const fixture = loadOptionalFixture(`europe-command-${cmd}`)
+      if (fixture) {
+        routes.push({ pattern, response: fixture })
+        break // One fixture per endpoint is enough
+      }
     }
   }
 
