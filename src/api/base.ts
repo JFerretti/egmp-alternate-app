@@ -41,6 +41,7 @@ export {
 
 export const DEFAULT_STATUS_CHECK_INTERVAL = 3600 * 1000
 export const MAX_COMPLETION_POLLS = 20
+export const CHARGE_COMPLETION_POLLS = 40
 const APP_CACHE_KEY = 'egmp-alternate-app'
 const CACHE_KEY = `egmp-bl-cache-${APP_CACHE_KEY}`
 

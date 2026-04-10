@@ -217,18 +217,18 @@ export default function CommandsScreen() {
       <View style={styles.tileRow}>
         <CommandTile
           icon="ev-station"
-          label="Start Charge"
+          label={status?.isCharging ? 'Already Charging' : 'Start Charge'}
           onPress={() => runCommand('Start Charge', sendStartCharge)}
-          disabled={isCommandLoading}
+          disabled={isCommandLoading || status?.isCharging === true}
           loading={activeCmd === 'Start Charge'}
           variant="tonal"
           t={t}
         />
         <CommandTile
           icon="ev-plug-type2"
-          label="Stop Charge"
+          label={status?.isCharging === false ? 'Not Charging' : 'Stop Charge'}
           onPress={() => runCommand('Stop Charge', sendStopCharge)}
-          disabled={isCommandLoading}
+          disabled={isCommandLoading || status?.isCharging === false}
           loading={activeCmd === 'Stop Charge'}
           variant="outline"
           t={t}

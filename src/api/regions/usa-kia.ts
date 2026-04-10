@@ -9,6 +9,7 @@ import {
   ClimateRequest,
   DEFAULT_STATUS_CHECK_INTERVAL,
   MAX_COMPLETION_POLLS,
+  CHARGE_COMPLETION_POLLS,
   ChargeLimit,
   Location,
   isNotEmptyObject,
@@ -285,9 +286,9 @@ export class BluelinkUSAKia extends Bluelink {
     throw Error(`Failed to retrieve vehicle status: ${JSON.stringify(resp.json)}`)
   }
 
-  protected async pollForCommandCompletion(transactionId: string): Promise<{ isSuccess: boolean; data: any }> {
+  protected async pollForCommandCompletion(transactionId: string, maxPolls: number = MAX_COMPLETION_POLLS): Promise<{ isSuccess: boolean; data: any }> {
     let attempts = 0
-    while (attempts <= MAX_COMPLETION_POLLS) {
+    while (attempts <= maxPolls) {
       await this.sleep(2000)
       const resp = await this.request({
         url: this.apiDomain + 'rmts/getRunningStatus',
@@ -340,7 +341,7 @@ export class BluelinkUSAKia extends Bluelink {
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
       const transactionId = this.caseInsensitiveParamExtraction('transactionid', resp.resp.headers)
-      if (transactionId) return await this.pollForCommandCompletion(transactionId)
+      if (transactionId) return await this.pollForCommandCompletion(transactionId, CHARGE_COMPLETION_POLLS)
     }
     throw Error(`Failed to send charge command: ${JSON.stringify(resp.json)}`)
   }

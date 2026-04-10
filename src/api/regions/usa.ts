@@ -10,6 +10,7 @@ import {
   Location,
   DEFAULT_STATUS_CHECK_INTERVAL,
   MAX_COMPLETION_POLLS,
+  CHARGE_COMPLETION_POLLS,
   isNotEmptyObject,
 } from '../base'
 import { Config } from '../../config/types'
@@ -205,9 +206,9 @@ export class BluelinkUSA extends Bluelink {
     throw Error(`Failed to retrieve vehicle status: ${JSON.stringify(resp.json)}`)
   }
 
-  protected async pollForCommandCompletion(transactionId: string): Promise<{ isSuccess: boolean; data: any }> {
+  protected async pollForCommandCompletion(transactionId: string, maxPolls: number = MAX_COMPLETION_POLLS): Promise<{ isSuccess: boolean; data: any }> {
     let attempts = 0
-    while (attempts <= MAX_COMPLETION_POLLS) {
+    while (attempts <= maxPolls) {
       const resp = await this.request({
         url: this.apiDomain + 'ac/v2/rmt/getRunningStatus',
         headers: { ...this.carHeaders(), tid: transactionId, login_id: this.config.auth.username, service_type: 'REMOTE_POLL' },
@@ -265,7 +266,7 @@ export class BluelinkUSA extends Bluelink {
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
       const transactionId = this.caseInsensitiveParamExtraction('tmsTid', resp.resp.headers)
-      if (transactionId) return await this.pollForCommandCompletion(transactionId)
+      if (transactionId) return await this.pollForCommandCompletion(transactionId, CHARGE_COMPLETION_POLLS)
     }
     throw Error(`Failed to send charge command: ${JSON.stringify(resp.json)}`)
   }
