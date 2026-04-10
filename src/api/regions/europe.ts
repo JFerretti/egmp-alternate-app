@@ -11,6 +11,7 @@ import {
   Location,
   DEFAULT_STATUS_CHECK_INTERVAL,
   MAX_COMPLETION_POLLS,
+  CHARGE_COMPLETION_POLLS,
   isNotEmptyObject,
   parseUrlParams,
 } from '../base'
@@ -689,9 +690,9 @@ export class BluelinkEurope extends Bluelink {
     throw Error(`Failed to get auth code: ${JSON.stringify(resp.json)}`)
   }
 
-  protected async pollForCommandCompletion(id: string, transactionId: string): Promise<{ isSuccess: boolean; data: any }> {
+  protected async pollForCommandCompletion(id: string, transactionId: string, maxPolls: number = MAX_COMPLETION_POLLS): Promise<{ isSuccess: boolean; data: any }> {
     let attempts = 0
-    while (attempts <= MAX_COMPLETION_POLLS) {
+    while (attempts <= maxPolls) {
       const resp = await this.request({
         url: `${this.apiDomain}/api/v1/spa/notifications/${id}/records`,
         headers: { Stamp: this.getStamp(this.apiConfig.appId, this.apiConfig.authCfb), ccuCCS2ProtocolSupport: this.getCCS2Header() },
@@ -758,7 +759,7 @@ export class BluelinkEurope extends Bluelink {
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
       const transactionId = resp.json.msgId
-      if (transactionId) return await this.pollForCommandCompletion(id, transactionId)
+      if (transactionId) return await this.pollForCommandCompletion(id, transactionId, CHARGE_COMPLETION_POLLS)
     }
     throw Error(`Failed to send charge command: ${JSON.stringify(resp.json)}`)
   }

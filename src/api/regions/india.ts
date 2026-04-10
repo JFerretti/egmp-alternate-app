@@ -12,6 +12,7 @@ import {
   Location,
   DEFAULT_STATUS_CHECK_INTERVAL,
   MAX_COMPLETION_POLLS,
+  CHARGE_COMPLETION_POLLS,
   parseUrlParams,
 } from '../base'
 import { Config } from '../../config/types'
@@ -429,9 +430,10 @@ export class BluelinkIndia extends Bluelink {
   protected async pollForCommandCompletion(
     id: string,
     transactionId: string,
+    maxPolls: number = MAX_COMPLETION_POLLS,
   ): Promise<{ isSuccess: boolean; data: any }> {
     let attempts = 0
-    while (attempts <= MAX_COMPLETION_POLLS) {
+    while (attempts <= maxPolls) {
       const resp = await this.request({
         url: `${this.apiDomain}/api/v1/spa/notifications/${id}/records`,
         headers: {},
@@ -511,7 +513,7 @@ export class BluelinkIndia extends Bluelink {
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
       const transactionId = resp.json.msgId
-      if (transactionId) return await this.pollForCommandCompletion(id, transactionId)
+      if (transactionId) return await this.pollForCommandCompletion(id, transactionId, CHARGE_COMPLETION_POLLS)
     }
     throw Error(`Failed to send chargeStartStop command: ${JSON.stringify(resp.json)}`)
   }

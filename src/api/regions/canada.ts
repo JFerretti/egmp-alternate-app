@@ -1,7 +1,7 @@
 // Canada region — ported from egmp-bluelink-scriptable/src/lib/bluelink-regions/canada.ts
 // Changes: Keychain→SecureStore, Scriptable Request→fetch, DateFormatter→manual parsing, UUID→crypto
 
-import { Bluelink, BluelinkTokens, BluelinkCar, BluelinkStatus, ClimateRequest, ChargeLimit, Location, DEFAULT_STATUS_CHECK_INTERVAL, MAX_COMPLETION_POLLS, isNotEmptyObject } from '../base'
+import { Bluelink, BluelinkTokens, BluelinkCar, BluelinkStatus, ClimateRequest, ChargeLimit, Location, DEFAULT_STATUS_CHECK_INTERVAL, MAX_COMPLETION_POLLS, CHARGE_COMPLETION_POLLS, isNotEmptyObject } from '../base'
 import { Config } from '../../config/types'
 
 const DEFAULT_API_DOMAIN = 'mybluelink.ca'
@@ -248,9 +248,9 @@ export class BluelinkCanada extends Bluelink {
     throw Error(`Failed to get auth code: ${JSON.stringify(resp.json)}`)
   }
 
-  protected async pollForCommandCompletion(id: string, authCode: string, transactionId: string, chargeLimit?: ChargeLimit): Promise<{ isSuccess: boolean; data: any }> {
+  protected async pollForCommandCompletion(id: string, authCode: string, transactionId: string, chargeLimit?: ChargeLimit, maxPolls: number = MAX_COMPLETION_POLLS): Promise<{ isSuccess: boolean; data: any }> {
     let attempts = 0
-    while (attempts <= MAX_COMPLETION_POLLS) {
+    while (attempts <= maxPolls) {
       const resp = await this.request({
         url: this.apiDomain + 'rmtsts',
         method: 'POST',
@@ -311,7 +311,7 @@ export class BluelinkCanada extends Bluelink {
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
       const transactionId = this.caseInsensitiveParamExtraction('transactionid', resp.resp.headers)
-      if (transactionId) return await this.pollForCommandCompletion(id, authCode, transactionId)
+      if (transactionId) return await this.pollForCommandCompletion(id, authCode, transactionId, undefined, CHARGE_COMPLETION_POLLS)
     }
     throw Error(`Failed to send charge command: ${JSON.stringify(resp.json)}`)
   }
