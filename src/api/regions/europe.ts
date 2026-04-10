@@ -584,7 +584,9 @@ export class BluelinkEurope extends Bluelink {
       remainingChargeTimeMins: status.Green.ChargingInformation.Charging.RemainTime,
       range:
         status.Drivetrain.FuelSystem.DTE.Total > 0
-          ? Math.floor(status.Drivetrain.FuelSystem.DTE.Total)
+          ? Math.floor(this.distanceUnit === 'mi'
+              ? status.Drivetrain.FuelSystem.DTE.Total * 0.621371
+              : status.Drivetrain.FuelSystem.DTE.Total)
           : this.cache?.status.range ?? 0,
       locked: !(
         Boolean(status.Cabin.Door.Row1.Driver.Open) &&
@@ -694,11 +696,10 @@ export class BluelinkEurope extends Bluelink {
     const resp = await this.request({
       url: `${this.apiDomain}/api/v2/spa/vehicles/${id}/ccs2/control/door`,
       method: 'POST',
-      data: JSON.stringify({ command: shouldLock ? 'close' : 'open' }),
+      data: JSON.stringify({ command: shouldLock ? 'close' : 'open', ccuCCS2ProtocolSupport: this.getCCS2Header() }),
       headers: { Stamp: this.getStamp(this.apiConfig.appId, this.apiConfig.authCfb), ccuCCS2ProtocolSupport: this.getCCS2Header() },
       authTokenOverride: await this.getAuthCode(id),
       validResponseFunction: this.requestResponseValid.bind(this),
-      noRetry: true,
     })
     if (this.requestResponseValid(resp.resp, resp.json).valid) {
       this.setLastCommandSent()
