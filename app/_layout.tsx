@@ -67,10 +67,8 @@ function RootLayoutNav() {
         <Stack.Screen
           name="settings"
           options={{
-            title: 'Settings',
+            headerShown: false,
             presentation: 'card',
-            headerStyle: { backgroundColor: theme.colors.card },
-            headerTintColor: theme.colors.text,
           }}
         />
         <Stack.Screen
