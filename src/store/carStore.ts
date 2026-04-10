@@ -82,6 +82,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       }
       set({ bluelink, car, status, isLoading: false })
     } catch (e: any) {
+      console.error('[Bluelink] Connect failed:', e)
       set({ isLoading: false, error: e.message ?? 'Connection failed' })
     }
   },
@@ -106,6 +107,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       }
       set({ bluelink, car, status, isLoading: false })
     } catch (e: any) {
+      console.error('[Bluelink] Select car failed:', e)
       set({ isLoading: false, error: e.message ?? 'Connection failed' })
     }
   },
@@ -132,6 +134,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
         set({ bluelink, car, status, isLoading: false })
       }
     } catch (e: any) {
+      console.error('[Bluelink] Switch vehicle failed:', e)
       set({ isLoading: false, error: e.message ?? 'Failed to switch vehicle' })
     }
   },
@@ -173,6 +176,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       const { car, status } = await bluelink.getStatus(forceUpdate, true, location)
       set({ car, status, isLoading: false })
     } catch (e: any) {
+      console.error('[Bluelink] Refresh status failed:', e)
       set({ isLoading: false, error: e.message ?? 'Failed to refresh status' })
     }
   },
@@ -187,6 +191,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Lock command failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Lock failed' })
       return false
     }
@@ -202,6 +207,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Unlock command failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Unlock failed' })
       return false
     }
@@ -217,6 +223,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Start charge failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Start charge failed' })
       return false
     }
@@ -232,6 +239,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Stop charge failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Stop charge failed' })
       return false
     }
@@ -247,6 +255,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Climate on failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Climate on failed' })
       return false
     }
@@ -262,6 +271,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Climate off failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Climate off failed' })
       return false
     }
@@ -277,6 +287,7 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ isCommandLoading: false })
       return result.isSuccess
     } catch (e: any) {
+      console.error('[Bluelink] Set charge limit failed:', e)
       set({ isCommandLoading: false, commandError: e.message ?? 'Set charge limit failed' })
       return false
     }
