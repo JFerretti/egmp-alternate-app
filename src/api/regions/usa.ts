@@ -82,7 +82,7 @@ export class BluelinkUSA extends Bluelink {
         expiry: Math.floor(Date.now() / 1000) + Number(resp.json.expires_in),
       }
     }
-    if (this.config.debugLogging) console.error('[USA] Login failed', JSON.stringify(resp.json))
+    console.error('[USA] Login failed', JSON.stringify(resp.json))
     return undefined
   }
 

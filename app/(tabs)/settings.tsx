@@ -259,10 +259,6 @@ export default function SettingsScreen() {
           <Picker label="Distance Unit" value={config.distanceUnit}
             options={[{ label: 'km', value: 'km' }, { label: 'mi', value: 'mi' }]}
             onSelect={(v) => setConfig((prev) => ({ ...prev, distanceUnit: v as 'km' | 'mi' }))} />
-          <Picker label="Debug Logging" value={config.debugLogging ? 'on' : 'off'}
-            options={[{ label: 'Off', value: 'off' }, { label: 'On', value: 'on' }]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, debugLogging: v === 'on' }))} />
-
           <TouchableOpacity style={styles.buttonSave} onPress={handleSavePreferences}>
             <Text style={styles.buttonSaveText}>Save Preferences</Text>
           </TouchableOpacity>

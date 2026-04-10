@@ -116,7 +116,7 @@ export class BluelinkCanada extends Bluelink {
         authCookie: cookieValue,
       }
     }
-    if (this.config.debugLogging) console.error('[Canada] Login failed', JSON.stringify(resp.json))
+    console.error('[Canada] Login failed', JSON.stringify(resp.json))
     return undefined
   }
 

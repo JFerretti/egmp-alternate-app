@@ -124,7 +124,7 @@ export class BluelinkAustralia extends Bluelink {
     })
 
     if (!this.requestResponseValid(respReset.resp, respReset.json).valid) {
-      if (this.config.debugLogging) console.error(`[AU] Failed to reset session ${JSON.stringify(respReset.resp)}`)
+      console.error(`[AU] Failed to reset session ${JSON.stringify(respReset.resp)}`)
       throw Error(`Failed to reset session`)
     }
 
@@ -138,7 +138,7 @@ export class BluelinkAustralia extends Bluelink {
     })
 
     if (!this.requestResponseValid(respSession.resp, respSession.json).valid) {
-      if (this.config.debugLogging) console.error(`[AU] Failed to reset session ${JSON.stringify(respSession.resp)}`)
+      console.error(`[AU] Failed to reset session ${JSON.stringify(respSession.resp)}`)
       throw Error(`Failed to reset session`)
     }
 
@@ -156,7 +156,7 @@ export class BluelinkAustralia extends Bluelink {
     })
 
     if (!this.requestResponseValid(respLogin.resp, respLogin.json).valid) {
-      if (this.config.debugLogging) console.error(`[AU] Failed to login`)
+      console.error(`[AU] Failed to login`)
       return undefined
     }
 
@@ -199,12 +199,12 @@ export class BluelinkAustralia extends Bluelink {
 
   protected async refreshTokens(): Promise<BluelinkTokens | undefined> {
     if (!this.cache.token.refreshToken) {
-      if (this.config.debugLogging) console.log('[AU] No refresh token - cannot refresh')
+      console.log('[AU] No refresh token - cannot refresh')
       return undefined
     }
     const refreshData = `client_id=${this.apiConfig.clientId}&grant_type=refresh_token&refresh_token=${this.cache.token.refreshToken}&redirect_uri=${this.apiDomain}/api/v1/user/oauth2/redirect`
 
-    if (this.config.debugLogging) console.log('[AU] Refreshing tokens')
+    console.log('[AU] Refreshing tokens')
     const resp = await this.request({
       url: `${this.apiDomain}/api/v1/user/oauth2/token`,
       data: refreshData,
@@ -226,7 +226,7 @@ export class BluelinkAustralia extends Bluelink {
       }
     }
 
-    if (this.config.debugLogging) console.error(`[AU] Refresh Failed: ${JSON.stringify(resp.json)}`)
+    console.error(`[AU] Refresh Failed: ${JSON.stringify(resp.json)}`)
     return undefined
   }
 
@@ -248,7 +248,7 @@ export class BluelinkAustralia extends Bluelink {
       return resp.json.resMsg.deviceId
     }
 
-    if (this.config.debugLogging) console.error(`[AU] Failed to fetch Device ID: ${JSON.stringify(resp.json)}`)
+    console.error(`[AU] Failed to fetch Device ID: ${JSON.stringify(resp.json)}`)
     return undefined
   }
 
@@ -466,7 +466,7 @@ export class BluelinkAustralia extends Bluelink {
               case 'non-response':
                 return { isSuccess: false, data: record }
               default:
-                if (this.config.debugLogging) console.log(`[AU] Waiting for command completion: ${JSON.stringify(record)}`)
+                console.log(`[AU] Waiting for command completion: ${JSON.stringify(record)}`)
                 break
             }
           }

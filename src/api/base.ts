@@ -385,9 +385,7 @@ export class Bluelink {
       ...(props.data && { data: props.data }),
     }
 
-    if (this.config.debugLogging) {
-      console.log(`[Bluelink] ${method} ${props.url}`, JSON.stringify(this.debugLastRequest))
-    }
+    console.log(`[Bluelink] ${method} ${props.url}`, JSON.stringify(this.debugLastRequest))
 
     try {
       const response = await fetch(props.url, {
@@ -423,9 +421,7 @@ export class Bluelink {
         json = await response.text()
       }
 
-      if (this.config.debugLogging) {
-        console.log(`[Bluelink] response ${response.status}`, !props.notJSON ? JSON.stringify(json) : 'text')
-      }
+      console.log(`[Bluelink] response ${response.status}`, !props.notJSON ? JSON.stringify(json) : 'text')
 
       const checkResponse = props.validResponseFunction(resp, json)
       if (!props.noRetry && checkResponse.retry && !props.noAuth) {
@@ -436,7 +432,7 @@ export class Bluelink {
       return { resp, json, cookies }
     } catch (error) {
       const errorString = `Request failed: ${props.url} — ${error}`
-      if (this.config.debugLogging) console.error(errorString)
+      console.error(errorString)
       throw Error(errorString)
     }
   }

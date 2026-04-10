@@ -117,7 +117,7 @@ export class BluelinkUSAKia extends Bluelink {
 
     // Prompt the user for MFA code via callback
     if (!this.mfaInputCallback) {
-      if (this.config.debugLogging) console.error('[USA-Kia] MFA required but no input callback provided')
+      console.error('[USA-Kia] MFA required but no input callback provided')
       return undefined
     }
 

@@ -260,7 +260,7 @@ export class BluelinkEurope extends Bluelink {
     const codeParams = parseUrlParams(storedRedirect)
     const code = codeParams['code']
     if (!code) {
-      if (this.config.debugLogging) console.error('[Europe Kia] Failed to extract code from redirect', storedRedirect)
+      console.error('[Europe Kia] Failed to extract code from redirect', storedRedirect)
       return undefined
     }
 
