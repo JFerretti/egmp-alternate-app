@@ -84,6 +84,20 @@ React Native (Expo) app for monitoring Hyundai/Kia EVs via Bluelink/Kia Connect 
 
 When spawning agents in worktrees, always use `mode: "bypassPermissions"`. Worktrees are isolated and disposable — permission prompts just slow things down.
 
+### Agent responsibilities (each agent does all of this before finishing):
+- Implement the change on a feature branch
+- Commit with a clear message
+- Push the branch (`git push -u origin <branch-name>`)
+- Create the PR via `gh pr create` with a summary and test plan
+- Report the PR URL back to the orchestrator
+
+### Orchestrator responsibilities:
+- Sequence work into rounds to avoid file conflicts
+- Merge PRs in order (`gh pr merge --squash --delete-branch`)
+- Rebase and re-push later PRs if earlier merges cause conflicts
+- Clean up worktrees and local branches after merging
+- Close beads issues and track overall progress
+
 ## Quality Gates
 
 Before committing, `npx tsc --noEmit` runs automatically via a PreToolUse hook. If TypeScript fails, the commit is blocked. Fix type errors before retrying.
