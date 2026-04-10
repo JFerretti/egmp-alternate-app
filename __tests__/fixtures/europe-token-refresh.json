@@ -1,0 +1,9 @@
+{
+  "scope": null,
+  "idp_cd": "hmgid1.0",
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.fixture-access-token",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.fixture-refresh-token",
+  "id_token": null,
+  "token_type": "Bearer",
+  "expires_in": 3600
+}

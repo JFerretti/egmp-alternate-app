@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/door/open",
+      "result": "success",
+      "record": "[Success] Doors unlocked. The doors will lock automatically after 30 seconds. The doors will not lock automatically if they are opened while the vehicle is running.",
+      "createdAt": "2026-04-10 19:19:30.440",
+      "updatedAt": "2026-04-10 19:19:33.040"
+    }
+  ],
+  "msgId": "fixture-msg-id"
+}

@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/temperature/stop",
+      "result": "success",
+      "record": "[Success] Climate control cancelled.",
+      "createdAt": "2026-04-10 19:21:44.677",
+      "updatedAt": "2026-04-10 19:21:47.887"
+    }
+  ],
+  "msgId": "fixture-msg-id"
+}

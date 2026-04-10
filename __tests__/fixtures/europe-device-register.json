@@ -1,0 +1,8 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": {
+    "deviceId": "fixture-device-id"
+  },
+  "msgId": "fixture-msg-id"
+}

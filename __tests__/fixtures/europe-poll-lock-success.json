@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/door/close",
+      "result": "success",
+      "record": "[Success] Doors locked.",
+      "createdAt": "2026-04-10 19:20:03.639",
+      "updatedAt": "2026-04-10 19:20:06.313"
+    }
+  ],
+  "msgId": "fixture-msg-id"
+}

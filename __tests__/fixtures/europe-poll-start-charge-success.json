@@ -1,0 +1,18 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": [
+    {
+      "deviceId": "fixture-device-id",
+      "vehicleId": "fixture-vehicle-id-001",
+      "recordId": "fixture-transaction-id",
+      "confirmedYn": false,
+      "action": "bluelink://control/charge/start",
+      "result": "success",
+      "record": "[Success] Remote charging started.",
+      "createdAt": "2026-04-10 19:29:20.629",
+      "updatedAt": "2026-04-10 19:29:23.232"
+    }
+  ],
+  "msgId": "fixture-msg-id"
+}
