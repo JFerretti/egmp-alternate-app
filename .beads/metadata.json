@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "egmp_alternate_app",
+  "project_id": "0a5646be-67fd-4627-ba32-7bcd5cf5cdd0"
+}
