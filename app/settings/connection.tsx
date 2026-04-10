@@ -13,59 +13,16 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/hooks/useTheme';
+import { ChipGroup } from '@/components/ChipGroup';
 import { Config, DEFAULT_CONFIG, SUPPORTED_REGIONS, SUPPORTED_MANUFACTURERS, getAuthMethod } from '@/src/config/types';
 import { loadConfig, saveConfig, clearConfig } from '@/src/storage/configStore';
 import { useCarStore } from '@/src/store/carStore';
 
-function ChipGroup({
-  label,
-  value,
-  options,
-  onSelect,
-  t,
-}: {
-  label: string;
-  value: string;
-  options: { label: string; value: string }[];
-  onSelect: (value: string) => void;
-  t: ReturnType<typeof useTheme>;
-}) {
-  return (
-    <View style={styles.field}>
-      <Text style={[styles.label, { color: t.onSurfaceVariant }]}>{label}</Text>
-      <View style={styles.chipRow}>
-        {options.map((opt) => {
-          const selected = value === opt.value;
-          return (
-            <TouchableOpacity
-              key={opt.value}
-              style={[
-                styles.chip,
-                selected
-                  ? { backgroundColor: t.secondaryContainer, borderColor: t.secondaryContainer }
-                  : { backgroundColor: 'transparent', borderColor: t.outline },
-              ]}
-              onPress={() => onSelect(opt.value)}>
-              <Text
-                style={[
-                  styles.chipText,
-                  { color: selected ? t.onSecondaryContainer : t.onSurfaceVariant },
-                ]}>
-                {opt.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
-export default function SettingsScreen() {
+export default function ConnectionScreen() {
   const router = useRouter();
   const t = useTheme();
   const {
-    connect, selectCar, disconnect, resetAll,
+    connect, selectCar, switchVehicle, disconnect,
     isLoading, error, needsWebviewAuth,
     bluelink, car, carOptions,
   } = useCarStore();
@@ -105,6 +62,10 @@ export default function SettingsScreen() {
     await selectCar(vin, updatedConfig);
   };
 
+  const handleSwitchVehicle = async () => {
+    await switchVehicle(config);
+  };
+
   const handleDisconnect = () => {
     Alert.alert('Disconnect', 'Clear stored session and credentials?', [
       { text: 'Cancel', style: 'cancel' },
@@ -114,20 +75,6 @@ export default function SettingsScreen() {
         onPress: async () => {
           disconnect();
           await clearConfig();
-          setConfig(DEFAULT_CONFIG);
-        },
-      },
-    ]);
-  };
-
-  const handleReset = () => {
-    Alert.alert('Reset All', 'This clears all cached data, tokens, and config. You will need to re-enter your settings.', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Reset',
-        style: 'destructive',
-        onPress: async () => {
-          await resetAll();
           setConfig(DEFAULT_CONFIG);
         },
       },
@@ -192,7 +139,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Connection section — only show when not selecting a car */}
+      {/* Connection section */}
       {!needsCarSelection && (
         <View style={[styles.section, { backgroundColor: t.surfaceContainer }]}>
           <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant }]}>Connection</Text>
@@ -218,7 +165,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Credentials section — only show when not selecting a car */}
+      {/* Credentials section */}
       {!needsCarSelection && (
         <View style={[styles.section, { backgroundColor: t.surfaceContainer }]}>
           <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant }]}>
@@ -334,46 +281,6 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Preferences section — only show when not selecting a car */}
-      {!needsCarSelection && (
-        <View style={[styles.section, { backgroundColor: t.surfaceContainer }]}>
-          <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant }]}>Preferences</Text>
-
-          <ChipGroup
-            label="Temperature"
-            value={config.tempType}
-            options={[
-              { label: 'Celsius', value: 'C' },
-              { label: 'Fahrenheit', value: 'F' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, tempType: v as 'C' | 'F' }))}
-            t={t}
-          />
-
-          <ChipGroup
-            label="Distance"
-            value={config.distanceUnit}
-            options={[
-              { label: 'Kilometers', value: 'km' },
-              { label: 'Miles', value: 'mi' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, distanceUnit: v as 'km' | 'mi' }))}
-            t={t}
-          />
-
-          <ChipGroup
-            label="Debug Logging"
-            value={config.debugLogging ? 'on' : 'off'}
-            options={[
-              { label: 'Off', value: 'off' },
-              { label: 'On', value: 'on' },
-            ]}
-            onSelect={(v) => setConfig((prev) => ({ ...prev, debugLogging: v === 'on' }))}
-            t={t}
-          />
-        </View>
-      )}
-
       {/* Error */}
       {error && (
         <View style={[styles.errorBanner, { backgroundColor: t.errorContainer }]}>
@@ -382,7 +289,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Actions — only show connect/reconnect when not selecting a car */}
+      {/* Connect / Reconnect button */}
       {!needsCarSelection && (
         <TouchableOpacity
           style={[styles.filledButton, { backgroundColor: t.primary }, isLoading && styles.buttonDisabled]}
@@ -413,6 +320,18 @@ export default function SettingsScreen() {
         </View>
       )}
 
+      {/* Switch Vehicle button */}
+      {isConnected && (
+        <TouchableOpacity
+          style={[styles.tonalButton, { backgroundColor: t.secondaryContainer }]}
+          onPress={handleSwitchVehicle}
+          disabled={isLoading}>
+          <MaterialCommunityIcons name="car-select" size={18} color={t.onSecondaryContainer} />
+          <Text style={[styles.tonalButtonText, { color: t.onSecondaryContainer }]}>Switch Vehicle</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Disconnect button */}
       {isConnected && (
         <TouchableOpacity
           style={[styles.outlineButton, { borderColor: t.error }]}
@@ -421,13 +340,6 @@ export default function SettingsScreen() {
           <Text style={[styles.outlineButtonText, { color: t.error }]}>Disconnect</Text>
         </TouchableOpacity>
       )}
-
-      <TouchableOpacity
-        style={[styles.outlineButton, { borderColor: t.outline, marginTop: 8 }]}
-        onPress={handleReset}>
-        <MaterialCommunityIcons name="delete-outline" size={18} color={t.onSurfaceVariant} />
-        <Text style={[styles.outlineButtonText, { color: t.onSurfaceVariant }]}>Reset All Data</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -513,16 +425,6 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
 
-  // Chips
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 100,
-    borderWidth: 1,
-  },
-  chipText: { fontSize: 14, fontWeight: '500' },
-
   // Error
   errorBanner: {
     flexDirection: 'row',
@@ -544,6 +446,16 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   filledButtonText: { fontSize: 16, fontWeight: '600', letterSpacing: 0.1 },
+  tonalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 100,
+  },
+  tonalButtonText: { fontSize: 16, fontWeight: '600', letterSpacing: 0.1 },
   outlineButton: {
     flexDirection: 'row',
     alignItems: 'center',
