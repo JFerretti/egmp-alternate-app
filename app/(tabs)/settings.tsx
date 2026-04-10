@@ -42,7 +42,7 @@ function Picker({ label, value, options, onSelect }: {
 export default function SettingsScreen() {
   const router = useRouter();
   const {
-    connect, selectCar, disconnect, resetAll,
+    connect, selectCar, switchVehicle, disconnect, resetAll,
     isLoading, error, needsWebviewAuth,
     bluelink, car, carOptions,
   } = useCarStore();
@@ -80,6 +80,10 @@ export default function SettingsScreen() {
     const updatedConfig = { ...config, vin };
     await saveConfig(updatedConfig);
     await selectCar(vin, updatedConfig);
+  };
+
+  const handleSwitchVehicle = async () => {
+    await switchVehicle(config);
   };
 
   const handleDisconnect = () => {
@@ -129,6 +133,12 @@ export default function SettingsScreen() {
           <Text style={styles.connectedDetail}>
             {car.modelName} {car.modelYear} — {car.vin}
           </Text>
+          <TouchableOpacity
+            style={styles.switchButton}
+            onPress={handleSwitchVehicle}
+            disabled={isLoading}>
+            <Text style={styles.switchButtonText}>Switch Vehicle</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -353,6 +363,16 @@ const styles = StyleSheet.create({
   },
   connectedTitle: { fontSize: 16, fontWeight: '700', color: '#2e7d32' },
   connectedDetail: { fontSize: 12, color: '#388e3c', marginTop: 2 },
+  switchButton: {
+    marginTop: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2e7d32',
+    alignSelf: 'flex-start' as const,
+  },
+  switchButtonText: { color: '#2e7d32', fontSize: 14, fontWeight: '600' as const },
 
   // Car selection
   helperText: { fontSize: 13, color: '#666', marginBottom: 8 },

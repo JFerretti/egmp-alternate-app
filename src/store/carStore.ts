@@ -24,6 +24,7 @@ interface CarStore {
   // Actions
   connect: (config: Config, mfaInputCallback?: MFAInputCallback) => Promise<void>
   selectCar: (vin: string, config: Config) => Promise<void>
+  switchVehicle: (config: Config) => Promise<void>
   disconnect: () => void
   resetAll: () => Promise<void>
   refreshStatus: (forceUpdate?: boolean, location?: boolean) => Promise<void>
@@ -98,6 +99,28 @@ export const useCarStore = create<CarStore>((set, get) => ({
       set({ bluelink, car, status, isLoading: false })
     } catch (e: any) {
       set({ isLoading: false, error: e.message ?? 'Connection failed' })
+    }
+  },
+
+  switchVehicle: async (config) => {
+    const configWithoutVin = { ...config, vin: undefined }
+    set({ car: null, status: null, carOptions: [], isLoading: true, error: null })
+    try {
+      const bluelink = await initRegionalBluelink(configWithoutVin, true)
+      if (!bluelink) {
+        set({ isLoading: false, error: 'Failed to load vehicle list' })
+        return
+      }
+      const options = bluelink.getCarOptions()
+      if (options.length > 0) {
+        set({ isLoading: false, carOptions: options, bluelink })
+      } else {
+        // Only one car on account — re-select it
+        const { car, status } = bluelink.getCachedStatus()
+        set({ bluelink, car, status, isLoading: false })
+      }
+    } catch (e: any) {
+      set({ isLoading: false, error: e.message ?? 'Failed to switch vehicle' })
     }
   },
 
