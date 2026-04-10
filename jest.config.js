@@ -8,5 +8,4 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-  forceExit: true,
 }

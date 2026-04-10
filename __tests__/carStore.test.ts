@@ -157,6 +157,7 @@ describe('carStore', () => {
     })
 
     it('sets error when connect throws', async () => {
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
       mockInitRegionalBluelink.mockRejectedValue(new Error('network request failed'))
 
       await useCarStore.getState().connect(mockConfig)
@@ -164,6 +165,7 @@ describe('carStore', () => {
       const state = useCarStore.getState()
       expect(state.error).toBe('Unable to reach server. Check your internet connection.')
       expect(state.isLoading).toBe(false)
+      spy.mockRestore()
     })
   })
 
@@ -242,6 +244,7 @@ describe('carStore', () => {
     })
 
     it('returns false and sets commandError on failure', async () => {
+      const spy = jest.spyOn(console, 'error').mockImplementation(() => {})
       const mockBl = createMockBluelink({
         sendLock: jest.fn().mockRejectedValue(new Error('failed to send lock')),
       })
@@ -254,6 +257,7 @@ describe('carStore', () => {
         'Command could not be sent. Please try again.'
       )
       expect(useCarStore.getState().isCommandLoading).toBe(false)
+      spy.mockRestore()
     })
 
     it('returns false when bluelink is null', async () => {
