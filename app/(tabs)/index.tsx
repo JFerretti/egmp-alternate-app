@@ -64,10 +64,10 @@ export default function StatusScreen() {
   const { bluelink, car, status, isLoading, error, refreshStatus } = useCarStore();
 
   useEffect(() => {
-    if (bluelink && !status) {
+    if (bluelink && car && !status) {
       refreshStatus(false, true);
     }
-  }, [bluelink]);
+  }, [bluelink, car]);
 
   if (!bluelink) {
     return (

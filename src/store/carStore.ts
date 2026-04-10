@@ -76,6 +76,10 @@ export const useCarStore = create<CarStore>((set, get) => ({
       }
 
       const { car, status } = bluelink.getCachedStatus()
+      if (!car) {
+        set({ isLoading: false, error: 'No vehicle found — try reconnecting' })
+        return
+      }
       set({ bluelink, car, status, isLoading: false })
     } catch (e: any) {
       set({ isLoading: false, error: e.message ?? 'Connection failed' })
@@ -96,6 +100,10 @@ export const useCarStore = create<CarStore>((set, get) => ({
         return
       }
       const { car, status } = bluelink.getCachedStatus()
+      if (!car) {
+        set({ isLoading: false, error: 'No vehicle found — try reconnecting' })
+        return
+      }
       set({ bluelink, car, status, isLoading: false })
     } catch (e: any) {
       set({ isLoading: false, error: e.message ?? 'Connection failed' })
@@ -117,6 +125,10 @@ export const useCarStore = create<CarStore>((set, get) => ({
       } else {
         // Only one car on account — re-select it
         const { car, status } = bluelink.getCachedStatus()
+        if (!car) {
+          set({ isLoading: false, error: 'No vehicle found — try reconnecting' })
+          return
+        }
         set({ bluelink, car, status, isLoading: false })
       }
     } catch (e: any) {
@@ -154,8 +166,8 @@ export const useCarStore = create<CarStore>((set, get) => ({
   },
 
   refreshStatus: async (forceUpdate = false, location = false) => {
-    const { bluelink } = get()
-    if (!bluelink) return
+    const { bluelink, car } = get()
+    if (!bluelink || !car) return
     set({ isLoading: true, error: null })
     try {
       const { car, status } = await bluelink.getStatus(forceUpdate, true, location)

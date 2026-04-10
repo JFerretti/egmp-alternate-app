@@ -247,8 +247,8 @@ export class Bluelink {
 
   public getCachedStatus(): Status {
     return {
-      car: this.cache.car,
-      status: this.cache.status,
+      car: this.cache?.car,
+      status: this.cache?.status,
     }
   }
 
@@ -257,6 +257,9 @@ export class Bluelink {
   }
 
   public async getStatus(forceUpdate: boolean, noCache: boolean, location = false): Promise<Status> {
+    if (!this.cache) {
+      throw new Error('No vehicle selected — please select a vehicle first')
+    }
     if (forceUpdate) {
       const car = await this.getCar()
       if (car) this.cache.car = car
