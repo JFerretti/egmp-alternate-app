@@ -201,7 +201,7 @@ export default function StatusScreen() {
         </View>
       )}
 
-      {/* Force Update button */}
+      {/* Wake Vehicle button */}
       <TouchableOpacity
         style={[
           styles.tonalButton,
@@ -212,9 +212,12 @@ export default function StatusScreen() {
         disabled={isLoading}>
         <MaterialCommunityIcons name="car-connected" size={18} color={t.onSecondaryContainer} />
         <Text style={[styles.tonalButtonText, { color: t.onSecondaryContainer }]}>
-          Force Update
+          Wake Vehicle
         </Text>
       </TouchableOpacity>
+      <Text style={[styles.wakeHelperText, { color: t.outline }]}>
+        Wakes the car to fetch current status and location
+      </Text>
     </ScrollView>
   );
 }
@@ -317,4 +320,10 @@ const styles = StyleSheet.create({
   },
   tonalButtonText: { fontSize: 15, fontWeight: '600', letterSpacing: 0.1 },
   buttonDisabled: { opacity: 0.5 },
+  wakeHelperText: {
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 8,
+    letterSpacing: 0.2,
+  },
 });
