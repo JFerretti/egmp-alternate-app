@@ -1,0 +1,7 @@
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.fixture-access-token",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.fixture-refresh-token",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "openid profile"
+}

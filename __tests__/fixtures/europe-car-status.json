@@ -1,0 +1,73 @@
+{
+  "resMsg": {
+    "state": {
+      "Vehicle": {
+        "Drivetrain": {
+          "Odometer": 12500,
+          "FuelSystem": {
+            "DTE": {
+              "Total": 320
+            }
+          }
+        },
+        "Green": {
+          "BatteryManagement": {
+            "BatteryRemain": {
+              "Ratio": 78
+            }
+          },
+          "ChargingInformation": {
+            "ConnectorFastening": {
+              "State": 1
+            },
+            "Charging": {
+              "RemainTime": 45
+            },
+            "TargetSoC": {
+              "Standard": 80,
+              "Quick": 80
+            }
+          },
+          "Electric": {
+            "SmartGrid": {
+              "RealTimePower": 7.2
+            }
+          }
+        },
+        "Cabin": {
+          "Door": {
+            "Row1": {
+              "Driver": { "Open": 0 },
+              "Passenger": { "Open": 0 }
+            },
+            "Row2": {
+              "Driver": { "Open": 0 },
+              "Passenger": { "Open": 0 }
+            }
+          },
+          "HVAC": {
+            "Row1": {
+              "Driver": {
+                "Blower": {
+                  "SpeedLevel": 0
+                }
+              }
+            }
+          }
+        },
+        "Electronics": {
+          "Battery": {
+            "Level": 92
+          }
+        },
+        "Location": {
+          "GeoCoord": {
+            "Latitude": "51.5074",
+            "Longitude": "-0.1278"
+          }
+        }
+      }
+    },
+    "lastUpdateTime": 1712700000000
+  }
+}

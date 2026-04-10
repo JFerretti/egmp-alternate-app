@@ -7,7 +7,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest",
+    "test:integration": "BLUELINK_INTEGRATION=true jest --testPathPattern=integration",
+    "record-fixtures": "npx tsx scripts/record-fixtures.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

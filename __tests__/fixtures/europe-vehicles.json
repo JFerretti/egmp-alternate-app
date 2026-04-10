@@ -1,0 +1,18 @@
+{
+  "resMsg": {
+    "vehicles": [
+      {
+        "vehicleId": "fixture-vehicle-id-001",
+        "vin": "KMXXXXXXXXXXXXXXX",
+        "nickname": "My IONIQ 5",
+        "vehicleName": "IONIQ 5",
+        "year": "2024",
+        "ccuCCS2ProtocolSupport": 1,
+        "detailInfo": {
+          "outColor": "Abyss Black Pearl",
+          "saleCarmdlCd": "Long Range AWD"
+        }
+      }
+    ]
+  }
+}

@@ -8,4 +8,5 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
+  testPathIgnorePatterns: ['/node_modules/', '__tests__/helpers/', 'integration'],
 }
