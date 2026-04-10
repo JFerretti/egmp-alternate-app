@@ -44,7 +44,9 @@ export default function SettingsIndex() {
             </Text>
           </View>
           <Text style={[styles.connectedDetail, { color: t.onSecondaryContainer }]}>
-            {car.modelName} {car.modelYear} — {car.vin}
+            {car.nickName && car.nickName !== car.modelName
+              ? `${car.modelYear} ${car.modelName}`
+              : car.modelYear}
           </Text>
         </View>
       )}

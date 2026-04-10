@@ -104,7 +104,10 @@ export default function ConnectionScreen() {
             </Text>
           </View>
           <Text style={[styles.connectedDetail, { color: t.onSecondaryContainer }]}>
-            {car.modelName} {car.modelYear} — {car.vin}
+            {car.nickName && car.nickName !== car.modelName
+              ? `${car.modelYear} ${car.modelName}`
+              : car.modelYear}
+            {' — '}{car.vin}
           </Text>
         </View>
       )}
@@ -129,7 +132,10 @@ export default function ConnectionScreen() {
                     {opt.nickName || opt.modelName}
                   </Text>
                   <Text style={[styles.carOptionDetail, { color: t.onSurfaceVariant }]}>
-                    {opt.modelName} {opt.modelYear} — {opt.vin}
+                    {opt.nickName && opt.nickName !== opt.modelName
+                      ? `${opt.modelYear} ${opt.modelName}`
+                      : opt.modelYear}
+                    {' — '}{opt.vin}
                   </Text>
                 </View>
               </View>
