@@ -49,8 +49,11 @@ yarn-error.*
 # design source files (PSD, etc.)
 /resources
 
-# Google Play service account key (for EAS submit)
+# Google Play service account keys (for EAS submit)
+# Matches both the canonical name and Google Cloud's auto-generated names
 play-service-account.json
+bluewink-play-*.json
+*-service-account*.json
 
 # Beads / Dolt files (added by bd init)
 .dolt/
