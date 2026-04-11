@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs, useRouter, usePathname } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 
@@ -25,6 +26,7 @@ function SettingsButton({ color }: { color: string }) {
 
 export default function TabLayout() {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -35,8 +37,8 @@ export default function TabLayout() {
           backgroundColor: t.surfaceContainer,
           borderTopColor: t.outlineVariant,
           borderTopWidth: 0.5,
-          height: 64,
-          paddingBottom: 8,
+          height: 64 + insets.bottom,
+          paddingBottom: 8 + insets.bottom,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
