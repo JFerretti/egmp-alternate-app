@@ -49,6 +49,9 @@ yarn-error.*
 # design source files (PSD, etc.)
 /resources
 
+# Google Play service account key (for EAS submit)
+play-service-account.json
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db

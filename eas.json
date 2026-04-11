@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 3.0.0"
+    "version": ">= 3.0.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "preview": {
@@ -9,9 +10,23 @@
         "buildType": "apk"
       }
     },
+    "internal": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
     "production": {
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./play-service-account.json",
+        "track": "internal"
       }
     }
   }

@@ -119,3 +119,47 @@ npx tsc --noEmit
 Pull requests and pushes to `main` are checked automatically via GitHub Actions:
 - TypeScript type-checking
 - Jest unit tests
+
+## Release Process
+
+### Versioning
+
+Version numbers live in `app.json`:
+- `expo.version` — user-visible semantic version (e.g. `1.0.0`)
+- `expo.android.versionCode` — managed remotely by EAS (`cli.appVersionSource: "remote"` in `eas.json`), auto-incremented on each build
+
+Bump `expo.version` manually for each release. The `versionCode` increment happens automatically.
+
+### Build profiles (eas.json)
+
+| Profile | Output | Purpose |
+|---------|--------|---------|
+| `preview` | APK | Sideloadable test build for direct install on a device |
+| `internal` | AAB | Internal testing track on Play Store |
+| `production` | AAB | Closed/Production track on Play Store |
+
+### Build a Play Store AAB
+
+```bash
+eas build --platform android --profile internal
+```
+
+### Submit to Play Store
+
+EAS Submit uses a Google Play API service account JSON key (gitignored at `play-service-account.json`):
+
+```bash
+eas submit --platform android --profile production
+```
+
+This uploads the latest AAB build to Play Console under the "internal" track (configured in `eas.json`). From Play Console, promote internal → closed → production manually.
+
+To rotate the service account key, generate a new one in Google Cloud Console, replace `play-service-account.json`, and the next `eas submit` will use it.
+
+### Privacy policy
+
+The Play Store requires a public privacy policy URL. The policy is in `docs/privacy-policy.md` and is hosted via GitHub Pages at:
+
+https://jferretti.github.io/egmp-alternate-app/privacy-policy.html
+
+To enable GitHub Pages: repo Settings → Pages → Source: Deploy from a branch → Branch: `main` / Folder: `/docs`.

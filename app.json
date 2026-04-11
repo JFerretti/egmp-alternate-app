@@ -3,9 +3,11 @@
     "name": "BlueWink",
     "slug": "bluewink",
     "version": "1.0.0",
+    "description": "Unofficial third-party companion app for monitoring and controlling Hyundai and Kia electric vehicles. Check battery, range, and charging status, send remote commands (lock, climate, charging), and view live charging progress. Not affiliated with Hyundai Motor Company or Kia Corporation.",
+    "privacy": "public",
     "orientation": "portrait",
     "icon": "./assets/images/bluewink_icon.png",
-    "scheme": "egmpalternateapp",
+    "scheme": "bluewink",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -23,7 +25,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.bluewink.app"
+      "package": "com.bluewink.app",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
