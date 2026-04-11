@@ -574,11 +574,14 @@ export class BluelinkEurope extends Bluelink {
 
     let isCharging = false
     let chargingPower = 0
-    if (status.Green.ChargingInformation.ConnectorFastening.State && status.Green.ChargingInformation.Charging.RemainTime > 0) {
+    const isPluggedIn = status.Green.ChargingInformation.ConnectorFastening.State > 0
+    const realTimePower = status.Green.Electric?.SmartGrid?.RealTimePower ?? 0
+    const remainTime = status.Green.ChargingInformation.Charging.RemainTime
+    // Charging is active when plugged in AND either power is flowing OR an ETA has been computed.
+    // Slow AC charging often reports RemainTime: 0 even while charging is in progress.
+    if (isPluggedIn && (realTimePower > 0 || remainTime > 0)) {
       isCharging = true
-      if (status.Green.Electric?.SmartGrid?.RealTimePower) {
-        chargingPower = status.Green.Electric.SmartGrid.RealTimePower
-      }
+      chargingPower = realTimePower
     }
 
     const chargeLimit: ChargeLimit = { dcPercent: 0, acPercent: 0 }
