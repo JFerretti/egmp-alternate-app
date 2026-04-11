@@ -46,6 +46,9 @@ yarn-error.*
 /ios
 /android
 
+# design source files (PSD, etc.)
+/resources
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db
