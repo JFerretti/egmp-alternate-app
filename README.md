@@ -16,6 +16,10 @@ This app builds on work from several projects:
 
 ## Authentication
 
+### Demo mode
+
+To try the app without a real account, enter `DEMO` as the refresh token on the connection screen (Settings → Vehicle & Connection, with manufacturer Hyundai and region Europe). The app loads sample vehicle data (a fictional 2025 IONIQ 5) and all remote commands become no-ops that return mock success responses. Useful for UI development, screenshots, and Play Store review.
+
 ### Hyundai Europe
 
 Hyundai EU added a CAPTCHA to their OAuth login page, making in-app credential-based login impossible. Instead, this app uses a **refresh token** approach:

@@ -4,6 +4,30 @@ This file contains the listing copy for Google Play Console. Copy/paste the rele
 
 ---
 
+## App Access (for Play Console review)
+
+Paste the following verbatim into Play Console → App content → App access. This tells Google Play reviewers how to activate the built-in demo mode so they can evaluate the app without a real Hyundai/Kia account.
+
+```
+Bluewink is an unofficial third-party companion app for Hyundai and Kia electric vehicles. Full functionality requires a real Hyundai Bluelink or Kia Connect account and a compatible vehicle.
+
+For Play Store review purposes, the app includes a built-in demo mode. To activate:
+
+1. Install and launch Bluewink
+2. Tap Settings → Vehicle & Connection
+3. Select manufacturer: Hyundai, region: Europe
+4. In the 'Refresh Token' field, enter: DEMO
+5. Leave all other fields blank and tap Connect
+
+The app will load sample vehicle data (a fictional 2025 IONIQ 5) and you can navigate all screens, send all remote commands, and view the charging dashboard. Commands return mock success responses without contacting any external service. Demo mode is clearly marked with a 'DEMO' badge on the main screen.
+
+The app does not require any paid subscription. It is free and open source.
+```
+
+In Play Console, select **"All or some functionality in my app is restricted"** and add a single instruction entry with the text above. No username or password is required — the `DEMO` refresh token is the only credential needed.
+
+---
+
 ## App name (max 30 chars)
 
 ```
