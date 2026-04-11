@@ -8,6 +8,7 @@ import { BluelinkUSAKia, MFAInputCallback } from './regions/usa-kia'
 import { BluelinkEurope } from './regions/europe'
 import { BluelinkIndia } from './regions/india'
 import { BluelinkAustralia } from './regions/australia'
+import { BluelinkDemo } from './demo/BluelinkDemo'
 
 const regionSupport: Record<string, string[]> = {
   kia: ['canada', 'usa', 'europe', 'australia'],
@@ -20,6 +21,10 @@ export async function initRegionalBluelink(
   refreshAuth = true,
   mfaInputCallback?: MFAInputCallback,
 ): Promise<Bluelink | undefined> {
+  if (config.auth.refreshToken === 'DEMO') {
+    return await BluelinkDemo.init(config)
+  }
+
   for (const [manufacturer, regions] of Object.entries(regionSupport)) {
     if (config.manufacturer.toLowerCase() === manufacturer) {
       if (!regions.includes(config.auth.region)) {
