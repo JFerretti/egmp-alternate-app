@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "egmp-alternate-app",
-    "slug": "egmp-alternate-app",
+    "name": "BlueWink",
+    "slug": "bluewink",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -23,7 +23,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.egmpalternateapp"
+      "package": "com.bluewink.app"
     },
     "web": {
       "bundler": "metro",
