@@ -10,7 +10,8 @@
     "test": "jest",
     "test:integration": "BLUELINK_INTEGRATION=true jest --testPathPattern=integration",
     "record-fixtures": "npx tsx scripts/record-fixtures.ts",
-    "test:command": "npx tsx scripts/test-commands.ts"
+    "test:command": "npx tsx scripts/test-commands.ts",
+    "build:android": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
