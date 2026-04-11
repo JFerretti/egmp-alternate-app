@@ -247,6 +247,10 @@ export class Bluelink {
     return this.loginFailure
   }
 
+  public isDemo(): boolean {
+    return false
+  }
+
   public needRestart(): boolean {
     return this.loginRequiredWebview
   }

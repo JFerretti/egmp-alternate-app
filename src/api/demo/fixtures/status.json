@@ -1,0 +1,18 @@
+{
+  "lastStatusCheck": 0,
+  "lastRemoteStatusCheck": 0,
+  "isCharging": false,
+  "isPluggedIn": true,
+  "chargingPower": 0,
+  "remainingChargeTimeMins": 0,
+  "range": 220,
+  "locked": true,
+  "climate": false,
+  "soc": 75,
+  "twelveSoc": 92,
+  "odometer": 14000,
+  "chargeLimit": {
+    "acPercent": 80,
+    "dcPercent": 90
+  }
+}

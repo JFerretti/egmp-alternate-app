@@ -1,0 +1,11 @@
+{
+  "id": "DEMO-CAR-ID-0001",
+  "vin": "DEMOVIN0000000001",
+  "nickName": "Demo IONIQ 5",
+  "modelName": "IONIQ 5",
+  "modelYear": "2025",
+  "modelTrim": "Long Range AWD",
+  "modelColour": "Cyber Gray",
+  "odometer": 14000,
+  "europeccs2": 1
+}
