@@ -1,6 +1,6 @@
-# egmp-alternate-app
+# BlueWink
 
-A React Native (Expo) app for monitoring and controlling Hyundai/Kia electric vehicles via the Bluelink/Kia Connect APIs. Built as a mobile app alternative to the [egmp-bluelink-scriptable](https://github.com/andyfase/egmp-bluelink-scriptable) iOS widget.
+A React Native (Expo) app for monitoring and controlling Hyundai/Kia electric vehicles via the Bluelink/Kia Connect APIs. Built as a mobile app alternative to the [egmp-bluelink-scriptable](https://github.com/andyfase/egmp-bluelink-scriptable) iOS widget, itself an alternative to official apps.
 
 ## AI Generated
 
