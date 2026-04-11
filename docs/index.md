@@ -1,13 +1,13 @@
 ---
 layout: default
-title: BlueWink
+title: Bluewink
 ---
 
-# BlueWink
+# Bluewink
 
 An unofficial third-party companion app for monitoring and controlling Hyundai and Kia electric vehicles.
 
-BlueWink is **not affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company or Kia Corporation**.
+Bluewink is **not affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company or Kia Corporation**.
 
 ## Links
 

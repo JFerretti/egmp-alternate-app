@@ -1,5 +1,5 @@
 // Material Design 3 inspired color tokens
-// Brand blue: #072d5c (BlueWink dark navy)
+// Brand blue: #072d5c (Bluewink dark navy)
 
 export const md3 = {
   light: {

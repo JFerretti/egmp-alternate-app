@@ -7,7 +7,7 @@ This file contains the listing copy for Google Play Console. Copy/paste the rele
 ## App name (max 30 chars)
 
 ```
-BlueWink
+Bluewink
 ```
 
 ---
@@ -25,9 +25,9 @@ Unofficial companion app for monitoring your Hyundai or Kia electric vehicle
 ## Full description (max 4000 chars)
 
 ```
-BlueWink is a free, open-source companion app for monitoring and controlling your Hyundai or Kia electric vehicle. Check your battery, range, and charging status, send remote commands, and watch live charging progress — all from a clean, modern interface.
+Bluewink is a free, open-source companion app for monitoring and controlling your Hyundai or Kia electric vehicle. Check your battery, range, and charging status, send remote commands, and watch live charging progress — all from a clean, modern interface.
 
-⚠️ IMPORTANT: BlueWink is an unofficial third-party application. It is NOT affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company, Kia Corporation, or any of their subsidiaries or affiliates. "Bluelink" and "Kia Connect" are trademarks of their respective owners. You will need a valid Hyundai or Kia connected services account to use this app.
+⚠️ IMPORTANT: Bluewink is an unofficial third-party application. It is NOT affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company, Kia Corporation, or any of their subsidiaries or affiliates. "Bluelink" and "Kia Connect" are trademarks of their respective owners. You will need a valid Hyundai or Kia connected services account to use this app.
 
 ✦ FEATURES
 
@@ -62,11 +62,11 @@ Other connected Hyundai and Kia EVs may also work.
 
 ✦ HOW IT WORKS
 
-For Hyundai Europe, BlueWink uses a refresh token you generate once on a computer (due to a CAPTCHA on Hyundai's official login page). For other regions, you can sign in directly with your username and password. Your credentials are stored in encrypted on-device storage (Android Keystore) and are never transmitted anywhere except to the official Hyundai/Kia APIs.
+For Hyundai Europe, Bluewink uses a refresh token you generate once on a computer (due to a CAPTCHA on Hyundai's official login page). For other regions, you can sign in directly with your username and password. Your credentials are stored in encrypted on-device storage (Android Keystore) and are never transmitted anywhere except to the official Hyundai/Kia APIs.
 
 ✦ OPEN SOURCE
 
-BlueWink is fully open source. Source code, issue tracker, and contribution guidelines:
+Bluewink is fully open source. Source code, issue tracker, and contribution guidelines:
 https://github.com/JFerretti/egmp-alternate-app
 
 ✦ DISCLAIMER
@@ -79,7 +79,7 @@ This app is provided "as is" with no warranty. The author is not responsible for
 ## What's new (max 500 chars)
 
 ```
-Initial release of BlueWink. Features:
+Initial release of Bluewink. Features:
 • Vehicle status (battery, range, charging, locks)
 • Remote commands: lock, charging, climate, charge limits
 • Live charging dashboard with current power and ETA
@@ -130,7 +130,7 @@ You'll need to declare these as "stored on device" in the Data Safety form, even
 | Other vehicle info (VIN, model, charge state) | App functionality | No |
 
 ### Data sharing
-- **Shared with third parties:** No data is shared with third parties by BlueWink. (Note: data the user enters IS sent to Hyundai/Kia's official API as part of normal app function — this is the user's own account interaction with their own car manufacturer, not third-party sharing in the Play Store sense.)
+- **Shared with third parties:** No data is shared with third parties by Bluewink. (Note: data the user enters IS sent to Hyundai/Kia's official API as part of normal app function — this is the user's own account interaction with their own car manufacturer, not third-party sharing in the Play Store sense.)
 
 ### Security practices
 - ☑ Data is encrypted in transit (HTTPS only)

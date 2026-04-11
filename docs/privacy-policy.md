@@ -4,16 +4,16 @@ title: Privacy Policy
 permalink: /privacy-policy.html
 ---
 
-# BlueWink Privacy Policy
+# Bluewink Privacy Policy
 
 **Effective date:** April 11, 2026
 **Last updated:** April 11, 2026
 
-## About BlueWink
+## About Bluewink
 
-BlueWink ("the app", "we", "our") is a free, open-source, third-party companion application for monitoring and controlling Hyundai and Kia electric vehicles. BlueWink is **not affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company, Kia Corporation, or any of their subsidiaries or affiliates**. "Bluelink" and "Kia Connect" are trademarks of their respective owners.
+Bluewink ("the app", "we", "our") is a free, open-source, third-party companion application for monitoring and controlling Hyundai and Kia electric vehicles. Bluewink is **not affiliated with, endorsed by, sponsored by, or in any way officially connected with Hyundai Motor Company, Kia Corporation, or any of their subsidiaries or affiliates**. "Bluelink" and "Kia Connect" are trademarks of their respective owners.
 
-This privacy policy explains what information BlueWink handles and how it is used.
+This privacy policy explains what information Bluewink handles and how it is used.
 
 ## Summary
 
@@ -23,7 +23,7 @@ This privacy policy explains what information BlueWink handles and how it is use
 
 ## What data the app handles
 
-To function, BlueWink stores and uses the following data **on your device only**, in encrypted secure storage (Android Keystore via `expo-secure-store`):
+To function, Bluewink stores and uses the following data **on your device only**, in encrypted secure storage (Android Keystore via `expo-secure-store`):
 
 | Data | Why | Where it lives |
 |------|-----|----------------|
@@ -35,9 +35,9 @@ To function, BlueWink stores and uses the following data **on your device only**
 
 ## What we transmit and to whom
 
-BlueWink communicates **only with the official Hyundai/Kia API endpoints** for the region you select (for example, `prd.eu-ccapi.hyundai.com` for Hyundai Europe). All communication uses HTTPS.
+Bluewink communicates **only with the official Hyundai/Kia API endpoints** for the region you select (for example, `prd.eu-ccapi.hyundai.com` for Hyundai Europe). All communication uses HTTPS.
 
-We do not send your data to any other server. There is no BlueWink backend.
+We do not send your data to any other server. There is no Bluewink backend.
 
 ## What we do **not** do
 
@@ -53,20 +53,20 @@ The app uses the official Hyundai/Kia connected car APIs (Bluelink / Kia Connect
 
 ## Children's privacy
 
-BlueWink is not directed at children under 13 and does not knowingly collect any data from anyone, including children.
+Bluewink is not directed at children under 13 and does not knowingly collect any data from anyone, including children.
 
 ## How to delete your data
 
 Because all data is stored on your device, you can delete everything by:
 
-1. Opening BlueWink → Settings → "Reset All Data" (clears tokens, cache, and config), or
+1. Opening Bluewink → Settings → "Reset All Data" (clears tokens, cache, and config), or
 2. Uninstalling the app from your device.
 
 There is no data on any server we control, so there is nothing for us to delete on your behalf.
 
 ## Open source
 
-BlueWink is open source. You can review the code at:
+Bluewink is open source. You can review the code at:
 [https://github.com/JFerretti/egmp-alternate-app](https://github.com/JFerretti/egmp-alternate-app)
 
 ## Changes to this policy
