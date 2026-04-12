@@ -142,6 +142,11 @@ export default function StatusScreen() {
               ? `${car.modelYear} ${car.modelName}`
               : car.modelYear}
           </Text>
+          {bluelink?.isDemo() && (
+            <View style={[styles.demoBadge, { backgroundColor: t.tertiaryContainer }]}>
+              <Text style={[styles.demoBadgeText, { color: t.onTertiaryContainer }]}>DEMO</Text>
+            </View>
+          )}
         </View>
       )}
 
@@ -308,6 +313,17 @@ const styles = StyleSheet.create({
   carHeader: { alignItems: 'center', marginBottom: 20 },
   carName: { fontSize: 24, fontWeight: '700', letterSpacing: -0.3 },
   carSub: { fontSize: 14, marginTop: 4, letterSpacing: 0.2 },
+  demoBadge: {
+    marginTop: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 100,
+  },
+  demoBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
 
   // Battery hero
   batteryHero: {
