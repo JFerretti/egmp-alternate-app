@@ -84,6 +84,7 @@ export class Bluelink {
   protected loginRequiredWebview: boolean
   protected carOptions: CarOption[]
   protected distanceUnit: string
+  protected apiDistanceUnit: 'km' | 'mi' = 'km'
   protected lastCommandSent: number | undefined
 
   constructor(config: Config, vin?: string) {
@@ -233,6 +234,12 @@ export class Bluelink {
 
   public getDistanceUnit(): string {
     return this.distanceUnit
+  }
+
+  protected convertDistance(value: number): number {
+    if (this.distanceUnit === this.apiDistanceUnit) return Math.floor(value)
+    if (this.apiDistanceUnit === 'km') return Math.floor(value * 0.621371)
+    return Math.floor(value * 1.60934)
   }
 
   public getLastCommandSent(): number | undefined {

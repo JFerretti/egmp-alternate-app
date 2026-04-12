@@ -336,9 +336,7 @@ export class BluelinkIndia extends Bluelink {
   }
 
   protected returnCarStatus(maint: any, loc: any, status: any, updateTime: number): BluelinkStatus {
-    const newOdometer = this.distanceUnit === 'mi'
-      ? Math.floor(maint.odometer * 0.621371)
-      : Math.floor(maint.odometer)
+    const newOdometer = this.convertDistance(maint.odometer)
 
     const isCharging = status.evStatus.batteryCharge
     const chargingPower = 0
@@ -368,7 +366,7 @@ export class BluelinkIndia extends Bluelink {
       remainingChargeTimeMins: status.evStatus.remainTime2.atc.value,
       range:
         status.evStatus.drvDistance[0].rangeByFuel.totalAvailableRange.value > 0
-          ? Math.floor(status.evStatus.drvDistance[0].rangeByFuel.totalAvailableRange.value)
+          ? this.convertDistance(status.evStatus.drvDistance[0].rangeByFuel.totalAvailableRange.value)
           : this.cache?.status.range ?? 0,
       locked: status.doorLock,
       climate: status.airCtrlOn,

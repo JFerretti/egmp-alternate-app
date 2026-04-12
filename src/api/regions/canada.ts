@@ -195,13 +195,13 @@ export class BluelinkCanada extends Bluelink {
       remainingChargeTimeMins: status.evStatus.remainTime2.atc.value,
       range:
         status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value > 0
-          ? status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value
+          ? this.convertDistance(status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value)
           : this.cache?.status.range ?? 0,
       locked: status.doorLock,
       climate: status.airCtrlOn,
       soc: status.evStatus.batteryStatus,
       twelveSoc: status.battery?.batSoc ?? 0,
-      odometer: odometer ?? (this.cache?.status.odometer ?? 0),
+      odometer: odometer ? this.convertDistance(odometer) : (this.cache?.status.odometer ?? 0),
       location: location ?? this.cache?.status.location,
       chargeLimit: chargeLimit && chargeLimit.acPercent > 0 ? chargeLimit : this.cache?.status.chargeLimit,
     }

@@ -306,10 +306,7 @@ export class BluelinkAustralia extends Bluelink {
   }
 
   protected returnCarStatus(status: any, updateTime: number): BluelinkStatus {
-    const newOdometer =
-      this.distanceUnit === 'mi'
-        ? Math.floor(status.Drivetrain.Odometer * 0.621371)
-        : Math.floor(status.Drivetrain.Odometer)
+    const newOdometer = this.convertDistance(status.Drivetrain.Odometer)
 
     let isCharging = false
     let chargingPower = 0
@@ -346,7 +343,7 @@ export class BluelinkAustralia extends Bluelink {
       remainingChargeTimeMins: status.Green.ChargingInformation.Charging.RemainTime,
       range:
         status.Drivetrain.FuelSystem.DTE.Total > 0
-          ? Math.floor(status.Drivetrain.FuelSystem.DTE.Total)
+          ? this.convertDistance(status.Drivetrain.FuelSystem.DTE.Total)
           : this.cache?.status.range ?? 0,
       locked: !(
         Boolean(status.Cabin.Door.Row1.Driver.Open) &&
