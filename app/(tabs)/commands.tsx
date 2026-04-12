@@ -7,6 +7,7 @@ import {
   View,
   Text,
   Animated,
+  Switch,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -14,6 +15,20 @@ import Slider from '@react-native-community/slider';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useCarStore } from '@/src/store/carStore';
+import { ClimateRequest } from '@/src/api/types';
+import { ClimateSettings, loadClimateSettings, saveClimateSettings } from '@/src/storage/climateSettingsStore';
+
+const TEMP_RANGE = {
+  C: { min: 17, max: 27, step: 0.5 },
+  F: { min: 62, max: 82, step: 1 },
+};
+
+const SEAT_LEVELS = [
+  { label: 'Off', value: 0 },
+  { label: 'Low', value: 2 },
+  { label: 'Med', value: 4 },
+  { label: 'High', value: 6 },
+];
 
 function CommandTile({
   icon,
@@ -87,6 +102,28 @@ export default function CommandsScreen() {
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'progress' | 'success' | 'error' } | null>(null);
   const statusAnim = useRef(new Animated.Value(0)).current;
 
+  const [climateSettings, setClimateSettings] = useState<ClimateSettings>({
+    temp: 19, tempType: 'C', defog: false, driverSeat: 0, passengerSeat: 0, steering: false,
+  });
+
+  useEffect(() => {
+    if (!bluelink) return;
+    const cfg = bluelink.getConfig();
+    loadClimateSettings().then((saved) => {
+      if (saved && saved.tempType === cfg.tempType) {
+        const range = TEMP_RANGE[cfg.tempType];
+        saved.temp = Math.max(range.min, Math.min(range.max, saved.temp));
+        setClimateSettings(saved);
+      } else {
+        setClimateSettings({
+          temp: cfg.tempType === 'F' ? 66 : 19,
+          tempType: cfg.tempType,
+          defog: false, driverSeat: 0, passengerSeat: 0, steering: false,
+        });
+      }
+    });
+  }, [bluelink]);
+
   useEffect(() => {
     if (statusMessage) {
       Animated.timing(statusAnim, { toValue: 1, duration: 200, useNativeDriver: true }).start();
@@ -132,8 +169,47 @@ export default function CommandsScreen() {
   };
 
   const config = bluelink.getConfig();
-  const warmTemp = config.climateTempWarm;
-  const coldTemp = config.climateTempCold;
+  const tempRange = TEMP_RANGE[config.tempType];
+  const supportsSeats = config.auth.region !== 'india';
+
+  const adjustTemp = (direction: number) => {
+    setClimateSettings(prev => {
+      const range = TEMP_RANGE[prev.tempType];
+      const newTemp = Math.round((prev.temp + direction * range.step) * 10) / 10;
+      if (newTemp < range.min || newTemp > range.max) return prev;
+      return { ...prev, temp: newTemp };
+    });
+  };
+
+  const applyPreset = (preset: 'cool' | 'warm') => {
+    const tt = config.tempType;
+    if (preset === 'cool') {
+      setClimateSettings({ temp: tt === 'F' ? 66 : 19, tempType: tt, defog: false, driverSeat: 0, passengerSeat: 0, steering: false });
+    } else {
+      setClimateSettings({ temp: tt === 'F' ? 71 : 21.5, tempType: tt, defog: true, driverSeat: 6, passengerSeat: 6, steering: true });
+    }
+  };
+
+  const handleStartClimate = () => {
+    const request: ClimateRequest = {
+      enable: true,
+      frontDefrost: climateSettings.defog,
+      rearDefrost: climateSettings.defog,
+      steering: climateSettings.steering,
+      temp: climateSettings.temp,
+      durationMinutes: 10,
+    };
+    if (supportsSeats && (climateSettings.driverSeat > 0 || climateSettings.passengerSeat > 0)) {
+      request.seatClimateOption = {
+        driver: climateSettings.driverSeat,
+        passenger: climateSettings.passengerSeat,
+        rearLeft: 0,
+        rearRight: 0,
+      };
+    }
+    saveClimateSettings(climateSettings);
+    runCommand('Start Climate', () => sendClimateOn(request));
+  };
 
   return (
     <ScrollView
@@ -237,78 +313,160 @@ export default function CommandsScreen() {
 
       {/* Climate */}
       <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant }]}>Climate</Text>
-      <View style={styles.tileRow}>
-        <CommandTile
-          icon="fire"
-          label={`Warm (${warmTemp}°)`}
-          onPress={() =>
-            runCommand('Climate Warm', () =>
-              sendClimateOn({
-                enable: true,
-                frontDefrost: false,
-                rearDefrost: false,
-                steering: false,
-                temp: warmTemp,
-                durationMinutes: 10,
-              }),
-            )
-          }
-          disabled={isCommandLoading}
-          loading={activeCmd === 'Climate Warm'}
-          variant="tonal"
-          t={t}
-        />
-        <CommandTile
-          icon="snowflake"
-          label={`Cool (${coldTemp}°)`}
-          onPress={() =>
-            runCommand('Climate Cool', () =>
-              sendClimateOn({
-                enable: true,
-                frontDefrost: false,
-                rearDefrost: false,
-                steering: false,
-                temp: coldTemp,
-                durationMinutes: 10,
-              }),
-            )
-          }
-          disabled={isCommandLoading}
-          loading={activeCmd === 'Climate Cool'}
-          variant="tonal"
-          t={t}
-        />
-      </View>
-      <View style={styles.tileRow}>
-        <CommandTile
-          icon="car-defrost-front"
-          label="Defrost"
-          onPress={() =>
-            runCommand('Defrost', () =>
-              sendClimateOn({
-                enable: true,
-                frontDefrost: true,
-                rearDefrost: true,
-                steering: true,
-                temp: warmTemp,
-                durationMinutes: 10,
-              }),
-            )
-          }
-          disabled={isCommandLoading}
-          loading={activeCmd === 'Defrost'}
-          variant="tonal"
-          t={t}
-        />
-        <CommandTile
-          icon="power"
-          label="Climate Off"
-          onPress={() => runCommand('Climate Off', sendClimateOff)}
-          disabled={isCommandLoading}
-          loading={activeCmd === 'Climate Off'}
-          variant="outline"
-          t={t}
-        />
+      <View style={[styles.climateCard, { backgroundColor: t.surfaceContainer }]}>
+        {/* Presets */}
+        <View style={styles.tileRow}>
+          <TouchableOpacity
+            style={[styles.presetButton, { backgroundColor: t.secondaryContainer }]}
+            onPress={() => applyPreset('cool')}
+            disabled={isCommandLoading}>
+            <MaterialCommunityIcons name="snowflake" size={20} color={t.onSecondaryContainer} />
+            <Text style={[styles.presetLabel, { color: t.onSecondaryContainer }]}>Cool</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.presetButton, { backgroundColor: t.secondaryContainer }]}
+            onPress={() => applyPreset('warm')}
+            disabled={isCommandLoading}>
+            <MaterialCommunityIcons name="fire" size={20} color={t.onSecondaryContainer} />
+            <Text style={[styles.presetLabel, { color: t.onSecondaryContainer }]}>Warm</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Temperature */}
+        <View>
+          <Text style={[styles.climateLabel, { color: t.onSurfaceVariant }]}>Temperature</Text>
+          <View style={styles.tempRow}>
+            <TouchableOpacity
+              style={[styles.tempButton, { borderColor: t.outline }]}
+              onPress={() => adjustTemp(-1)}
+              disabled={isCommandLoading || climateSettings.temp <= tempRange.min}>
+              <MaterialCommunityIcons name="minus" size={20} color={t.onSurface} />
+            </TouchableOpacity>
+            <Text style={[styles.tempValue, { color: t.onSurface }]}>
+              {climateSettings.temp}°{config.tempType}
+            </Text>
+            <TouchableOpacity
+              style={[styles.tempButton, { borderColor: t.outline }]}
+              onPress={() => adjustTemp(1)}
+              disabled={isCommandLoading || climateSettings.temp >= tempRange.max}>
+              <MaterialCommunityIcons name="plus" size={20} color={t.onSurface} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Defog */}
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleLabelRow}>
+            <MaterialCommunityIcons name="car-defrost-front" size={20} color={t.onSurfaceVariant} />
+            <Text style={[styles.toggleLabelText, { color: t.onSurfaceVariant }]}>Defog</Text>
+          </View>
+          <Switch
+            value={climateSettings.defog}
+            onValueChange={(v) => setClimateSettings(prev => ({ ...prev, defog: v }))}
+            trackColor={{ false: t.surfaceContainerHigh, true: t.primary }}
+            thumbColor={climateSettings.defog ? t.onPrimary : t.outline}
+            disabled={isCommandLoading}
+          />
+        </View>
+
+        {/* Seat & steering controls — hidden for India */}
+        {supportsSeats && (
+          <>
+            <View>
+              <Text style={[styles.climateLabel, { color: t.onSurfaceVariant }]}>Driver Seat</Text>
+              <View style={styles.chipRow}>
+                {SEAT_LEVELS.map((level) => {
+                  const selected = climateSettings.driverSeat === level.value;
+                  return (
+                    <TouchableOpacity
+                      key={level.value}
+                      style={[
+                        styles.seatChip,
+                        selected
+                          ? { backgroundColor: t.secondaryContainer, borderColor: t.secondaryContainer }
+                          : { backgroundColor: 'transparent', borderColor: t.outline },
+                      ]}
+                      onPress={() => setClimateSettings(prev => ({ ...prev, driverSeat: level.value }))}
+                      disabled={isCommandLoading}>
+                      <Text style={[styles.seatChipText, { color: selected ? t.onSecondaryContainer : t.onSurfaceVariant }]}>
+                        {level.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View>
+              <Text style={[styles.climateLabel, { color: t.onSurfaceVariant }]}>Passenger Seat</Text>
+              <View style={styles.chipRow}>
+                {SEAT_LEVELS.map((level) => {
+                  const selected = climateSettings.passengerSeat === level.value;
+                  return (
+                    <TouchableOpacity
+                      key={level.value}
+                      style={[
+                        styles.seatChip,
+                        selected
+                          ? { backgroundColor: t.secondaryContainer, borderColor: t.secondaryContainer }
+                          : { backgroundColor: 'transparent', borderColor: t.outline },
+                      ]}
+                      onPress={() => setClimateSettings(prev => ({ ...prev, passengerSeat: level.value }))}
+                      disabled={isCommandLoading}>
+                      <Text style={[styles.seatChipText, { color: selected ? t.onSecondaryContainer : t.onSurfaceVariant }]}>
+                        {level.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={styles.toggleRow}>
+              <View style={styles.toggleLabelRow}>
+                <MaterialCommunityIcons name="steering" size={20} color={t.onSurfaceVariant} />
+                <Text style={[styles.toggleLabelText, { color: t.onSurfaceVariant }]}>Steering Wheel</Text>
+              </View>
+              <Switch
+                value={climateSettings.steering}
+                onValueChange={(v) => setClimateSettings(prev => ({ ...prev, steering: v }))}
+                trackColor={{ false: t.surfaceContainerHigh, true: t.primary }}
+                thumbColor={climateSettings.steering ? t.onPrimary : t.outline}
+                disabled={isCommandLoading}
+              />
+            </View>
+          </>
+        )}
+
+        {/* Action buttons */}
+        <View style={[styles.tileRow, { marginTop: 4 }]}>
+          <TouchableOpacity
+            style={[styles.climateActionButton, { backgroundColor: t.primary }, isCommandLoading && styles.tileDisabled]}
+            onPress={handleStartClimate}
+            disabled={isCommandLoading}>
+            {activeCmd === 'Start Climate' ? (
+              <ActivityIndicator color={t.onPrimary} size="small" />
+            ) : (
+              <>
+                <MaterialCommunityIcons name="play" size={18} color={t.onPrimary} />
+                <Text style={[styles.climateActionText, { color: t.onPrimary }]}>Start</Text>
+              </>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.climateActionButton, { borderWidth: 1, borderColor: t.outline }, isCommandLoading && styles.tileDisabled]}
+            onPress={() => runCommand('Stop Climate', sendClimateOff)}
+            disabled={isCommandLoading}>
+            {activeCmd === 'Stop Climate' ? (
+              <ActivityIndicator color={t.onSurfaceVariant} size="small" />
+            ) : (
+              <>
+                <MaterialCommunityIcons name="stop" size={18} color={t.onSurfaceVariant} />
+                <Text style={[styles.climateActionText, { color: t.onSurfaceVariant }]}>Stop</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Charge Limit */}
@@ -399,6 +557,94 @@ const styles = StyleSheet.create({
   },
   commandTileLabel: { fontSize: 14, fontWeight: '600', letterSpacing: 0.1 },
   tileDisabled: { opacity: 0.5 },
+
+  // Climate card
+  climateCard: {
+    borderRadius: 20,
+    padding: 20,
+    gap: 16,
+  },
+  climateLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+    marginBottom: 8,
+  },
+  presetButton: {
+    flex: 1,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 100,
+  },
+  presetLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  tempRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 16,
+  },
+  tempButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  tempValue: {
+    fontSize: 28,
+    fontWeight: '600' as const,
+    minWidth: 100,
+    textAlign: 'center' as const,
+  },
+  toggleRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+  },
+  toggleLabelRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+  },
+  toggleLabelText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  chipRow: {
+    flexDirection: 'row' as const,
+    gap: 8,
+  },
+  seatChip: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 100,
+    borderWidth: 1,
+    alignItems: 'center' as const,
+  },
+  seatChipText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  climateActionButton: {
+    flex: 1,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 100,
+  },
+  climateActionText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
 
   // Charge limit card
   chargeLimitCard: {
