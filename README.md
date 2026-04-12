@@ -39,6 +39,16 @@ Uses WebView-based OAuth — the app opens a login page where you authenticate d
 
 Use direct credential-based login (username/password entered in the app).
 
+## Security: API Client Credentials
+
+This app contains OAuth client credentials (client IDs, client secrets, auth tokens) hardcoded in the source code under `src/api/regions/`. These are the same credentials used by the official Hyundai/Kia mobile apps and are shared across the open-source Bluelink ecosystem ([bluelinky](https://github.com/Hacksore/bluelinky), [hyundai_kia_connect_api](https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api), etc.). They were originally extracted from the official apps via reverse engineering and have been public since at least 2021.
+
+**These credentials alone cannot access any vehicle data or send any commands.** The Hyundai/Kia API requires a user-scoped JWT access token for all data and command endpoints. I have verified this by testing the API directly with only client credentials (with and without a real VIN) — all requests are rejected with 400/403 errors. A valid access token can only be obtained through the full login flow (username/password + CAPTCHA, or a valid refresh token), and vehicle commands additionally require a PIN.
+
+User credentials are stored locally on-device using [expo-secure-store](https://docs.expo.dev/versions/latest/sdk/securestore/) and are only transmitted to the manufacturer's own APIs.
+
+If you discover a security issue, please report it privately via [GitHub's security advisory feature](https://github.com/jferretti/egmp-alternate-app/security/advisories) to allow time for a fix before public disclosure.
+
 ## Current Status
 
 ### Working & Tested

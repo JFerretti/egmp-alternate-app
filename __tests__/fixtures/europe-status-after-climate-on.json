@@ -1,0 +1,49 @@
+{
+  "_comment": "Climate-relevant fields from CCAPI status captured with climate ON (21°C, no defrost, no seats). Compare against europe-car-status.json baseline.",
+  "Cabin": {
+    "HVAC": {
+      "Row1": {
+        "Driver": {
+          "Temperature": {
+            "Value": "21.0",
+            "Unit": 0
+          },
+          "Blower": {
+            "SpeedLevel": 1
+          }
+        }
+      }
+    },
+    "Seat": {
+      "Row1": {
+        "Driver": { "Climate": { "State": 2 } },
+        "Passenger": { "Climate": { "State": 2 } }
+      },
+      "Row2": {
+        "Left": { "Climate": { "State": 2 } },
+        "Right": { "Climate": { "State": 2 } }
+      }
+    },
+    "SteeringWheel": {
+      "Heat": { "RemoteControl": { "Step": 0 }, "State": 0 }
+    }
+  },
+  "Body": {
+    "Windshield": {
+      "Front": { "Defog": { "State": 0 } },
+      "Rear": { "Defog": { "State": 0 } }
+    }
+  },
+  "Electronics": {
+    "PowerSupply": { "Accessory": 0, "Ignition3": 1, "Ignition1": 0 }
+  },
+  "Green": {
+    "PowerConsumption": { "Prediction": { "Climate": 350 } }
+  },
+  "RemoteControl": { "SleepMode": 0 },
+  "Service": {
+    "ConnectedCar": {
+      "RemoteControl": { "Available": 1, "WaitingTime": 336 }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "_comment": "Climate-relevant fields from CCAPI status captured with climate OFF. Compare against europe-status-after-climate-on.json.",
+  "Cabin": {
+    "HVAC": {
+      "Row1": {
+        "Driver": {
+          "Temperature": {
+            "Value": "OFF",
+            "Unit": 0
+          },
+          "Blower": {
+            "SpeedLevel": 0
+          }
+        }
+      }
+    },
+    "Seat": {
+      "Row1": {
+        "Driver": { "Climate": { "State": 2 } },
+        "Passenger": { "Climate": { "State": 2 } }
+      },
+      "Row2": {
+        "Left": { "Climate": { "State": 2 } },
+        "Right": { "Climate": { "State": 2 } }
+      }
+    },
+    "SteeringWheel": {
+      "Heat": { "RemoteControl": { "Step": 0 }, "State": 0 }
+    }
+  },
+  "Body": {
+    "Windshield": {
+      "Front": { "Defog": { "State": 0 } },
+      "Rear": { "Defog": { "State": 0 } }
+    }
+  },
+  "Electronics": {
+    "PowerSupply": { "Accessory": 0, "Ignition3": 0, "Ignition1": 0 }
+  },
+  "Green": {
+    "PowerConsumption": { "Prediction": { "Climate": 0 } }
+  },
+  "RemoteControl": { "SleepMode": 1 },
+  "Service": {
+    "ConnectedCar": {
+      "RemoteControl": { "Available": 1, "WaitingTime": 336 }
+    }
+  }
+}
