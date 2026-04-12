@@ -102,6 +102,11 @@ export class BluelinkAustralia extends Bluelink {
         : '0'
   }
 
+  private isCCS2(): boolean {
+    const val = this.europeccs2 ?? this.cache?.car.europeccs2
+    return typeof val === 'number' && val > 0
+  }
+
   private requestResponseValid(
     resp: Record<string, any>,
     _data: Record<string, any>,
@@ -529,13 +534,17 @@ export class BluelinkAustralia extends Bluelink {
   }
 
   protected async climateOn(id: string, config: ClimateRequest): Promise<{ isSuccess: boolean; data: BluelinkStatus }> {
+    const heatingFields = this.isCCS2()
+      ? { strgWhlHeating: config.steering ? 1 : 0, sideRearMirrorHeating: config.rearDefrost ? 1 : 0 }
+      : { heating1: this.getHeatingValue(config.rearDefrost, config.steering) }
+
     return await this.climateStartStop(id, {
       command: 'start',
       windshieldFrontDefogState: config.frontDefrost,
       hvacTempType: 1,
-      heating1: this.getHeatingValue(config.rearDefrost, config.steering),
+      ...heatingFields,
       tempUnit: this.config.tempType,
-      drvSeatLoc: 'R', // Australia uses RHD cars
+      drvSeatLoc: 'R',
       hvacTemp: config.temp,
       ...(config.seatClimateOption &&
         isNotEmptyObject(config.seatClimateOption) && {

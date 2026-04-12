@@ -178,6 +178,11 @@ export class BluelinkEurope extends Bluelink {
         : '0'
   }
 
+  private isCCS2(): boolean {
+    const val = this.europeccs2 ?? this.cache?.car.europeccs2
+    return typeof val === 'number' && val > 0
+  }
+
   private requestResponseValid(resp: Record<string, any>, _data: Record<string, any>): { valid: boolean; retry: boolean } {
     if (Object.hasOwn(resp, 'statusCode') && (resp.statusCode === 200 || resp.statusCode === 204 || resp.statusCode === 302)) {
       return { valid: true, retry: false }
@@ -763,12 +768,15 @@ export class BluelinkEurope extends Bluelink {
   }
 
   protected async climateOn(id: string, config: ClimateRequest): Promise<{ isSuccess: boolean; data: BluelinkStatus }> {
+    const heatingFields = this.isCCS2()
+      ? { strgWhlHeating: config.steering ? 1 : 0, sideRearMirrorHeating: config.rearDefrost ? 1 : 0 }
+      : { heating1: this.getHeatingValue(config.rearDefrost, config.steering) }
+
     return await this.climateStartStop(id, {
       command: 'start',
       windshieldFrontDefogState: config.frontDefrost,
       hvacTempType: 1,
-      strgWhlHeating: config.steering ? 1 : 0,
-      sideRearMirrorHeating: config.rearDefrost ? 1 : 0,
+      ...heatingFields,
       tempUnit: this.config.tempType,
       drvSeatLoc: this.distanceUnit === 'mi' ? 'R' : 'L',
       hvacTemp: config.temp,

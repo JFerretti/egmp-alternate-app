@@ -1,13 +1,16 @@
 /**
  * Climate payload construction tests — verifies that ClimateRequest inputs
- * produce the correct API payloads for the Europe CCS2 endpoint.
+ * produce the correct API payloads for the Europe endpoint.
  *
- * These tests validate the transformation in europe.ts climateOn() and
- * base.ts getHeatingValue(). Update the expected values once validated
- * against the real car using: npx tsx scripts/test-climate.ts
+ * CCS2 vehicles use strgWhlHeating + sideRearMirrorHeating (validated against IONIQ 5).
+ * Non-CCS2 vehicles use the legacy heating1 bitfield.
+ *
+ * Validate against a real car: npx tsx scripts/test-climate.ts
  */
 
-import { installFetchMock } from '../helpers/fetchMock'
+import * as fs from 'fs'
+import * as path from 'path'
+import { installFetchMock, FetchRoute } from '../helpers/fetchMock'
 import { BluelinkEurope } from '@/src/api/regions/europe'
 import type { Config } from '@/src/config/types'
 import type { ClimateRequest } from '@/src/api/types'
@@ -225,5 +228,72 @@ describe('Europe climate payload construction', () => {
       expect(payload.drvSeatLoc).toBe('R')
       rhFetchMock.restore()
     })
+  })
+})
+
+describe('Europe non-CCS2 climate payload (legacy heating1)', () => {
+  let fetchMock: ReturnType<typeof installFetchMock>
+  let bluelink: BluelinkEurope
+
+  beforeEach(async () => {
+    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+
+    const vehiclesFixture = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'europe-vehicles.json'), 'utf-8')
+    )
+    const nonCCS2Vehicles = JSON.parse(JSON.stringify(vehiclesFixture))
+    nonCCS2Vehicles.resMsg.vehicles[0].ccuCCS2ProtocolSupport = 0
+
+    const nonCCS2Route: FetchRoute = {
+      pattern: /\/api\/v1\/spa\/vehicles$/,
+      response: nonCCS2Vehicles,
+    }
+
+    fetchMock = installFetchMock([nonCCS2Route], true)
+    bluelink = await BluelinkEurope.init(TEST_CONFIG, true)
+  })
+
+  afterEach(() => {
+    fetchMock.restore()
+    jest.restoreAllMocks()
+  })
+
+  it('sends heating1=0 when both rearDefrost and steering are false', async () => {
+    await bluelink.sendClimateOn({
+      enable: true, frontDefrost: false, rearDefrost: false,
+      steering: false, temp: 21, durationMinutes: 10,
+    })
+    const payload = getClimatePayload(fetchMock)
+    expect(payload.heating1).toBe(0)
+    expect(payload.strgWhlHeating).toBeUndefined()
+    expect(payload.sideRearMirrorHeating).toBeUndefined()
+  })
+
+  it('sends heating1=2 for rearDefrost only', async () => {
+    await bluelink.sendClimateOn({
+      enable: true, frontDefrost: false, rearDefrost: true,
+      steering: false, temp: 21, durationMinutes: 10,
+    })
+    const payload = getClimatePayload(fetchMock)
+    expect(payload.heating1).toBe(2)
+  })
+
+  it('sends heating1=3 for steering only', async () => {
+    await bluelink.sendClimateOn({
+      enable: true, frontDefrost: false, rearDefrost: false,
+      steering: true, temp: 21, durationMinutes: 10,
+    })
+    const payload = getClimatePayload(fetchMock)
+    expect(payload.heating1).toBe(3)
+  })
+
+  it('sends heating1=4 for both rearDefrost and steering', async () => {
+    await bluelink.sendClimateOn({
+      enable: true, frontDefrost: false, rearDefrost: true,
+      steering: true, temp: 21, durationMinutes: 10,
+    })
+    const payload = getClimatePayload(fetchMock)
+    expect(payload.heating1).toBe(4)
   })
 })
