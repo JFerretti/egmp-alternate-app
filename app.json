@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bluewink",
     "slug": "egmp-alternate-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Unofficial third-party companion app for monitoring and controlling Hyundai and Kia electric vehicles. Check battery, range, and charging status, send remote commands (lock, climate, charging), and view live charging progress. Not affiliated with Hyundai Motor Company or Kia Corporation.",
     "privacy": "public",
     "orientation": "portrait",
