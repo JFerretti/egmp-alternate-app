@@ -201,6 +201,9 @@ export default function ConnectionScreen() {
                 placeholder="Paste refresh token from bluelink_refresh_token tool"
                 placeholderTextColor={t.outline}
               />
+              <Text style={[styles.demoHint, { color: t.onSurfaceVariant }]}>
+                Tip: enter DEMO as the refresh token to try the app with sample vehicle data — no real account needed.
+              </Text>
             </View>
           )}
 
@@ -430,6 +433,11 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     fontSize: 13,
     fontFamily: 'monospace',
+  },
+  demoHint: {
+    fontSize: 12,
+    marginTop: 8,
+    lineHeight: 18,
   },
 
   // Error
