@@ -1,0 +1,58 @@
+{
+  "scenario": "climate-off",
+  "timestamp": "2026-04-12T16:05:52.147Z",
+  "sentPayload": {
+    "command": "stop"
+  },
+  "apiResponse": {
+    "retCode": "S",
+    "resCode": "0000",
+    "msgId": "fixture-msg-id",
+    "SID": "72027860-3689-11f1-871f-beefc9436eeb"
+  },
+  "preClimateState": {
+    "hvac": {
+      "blowerSpeed": 7,
+      "tempValue": "21.5",
+      "tempUnit": 0
+    },
+    "defog": {
+      "frontDefog": 1,
+      "frontHeat": 0,
+      "rearDefog": 1
+    },
+    "steeringWheel": {
+      "heatState": 1,
+      "remoteStep": 1
+    },
+    "seats": {
+      "driverState": 8,
+      "passengerState": 8,
+      "rearLeftState": 2,
+      "rearRightState": 2
+    }
+  },
+  "postClimateState": {
+    "hvac": {
+      "blowerSpeed": 0,
+      "tempValue": "OFF",
+      "tempUnit": 0
+    },
+    "defog": {
+      "frontDefog": 0,
+      "frontHeat": 0,
+      "rearDefog": 0
+    },
+    "steeringWheel": {
+      "heatState": 0,
+      "remoteStep": 0
+    },
+    "seats": {
+      "driverState": 2,
+      "passengerState": 2,
+      "rearLeftState": 2,
+      "rearRightState": 2
+    }
+  },
+  "observed": "<<FILL IN: what did the car actually do?>>"
+}

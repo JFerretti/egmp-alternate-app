@@ -28,6 +28,7 @@ export class BluelinkUSA extends Bluelink {
   constructor(config: Config, statusCheckInterval?: number) {
     super(config)
     this.distanceUnit = 'mi'
+    this.apiDistanceUnit = 'mi'
     this.apiDomain = config.manufacturer
       ? this.getApiDomain(config.manufacturer, API_DOMAINS, DEFAULT_API_DOMAIN)
       : DEFAULT_API_DOMAIN
@@ -178,13 +179,13 @@ export class BluelinkUSA extends Bluelink {
       remainingChargeTimeMins: status.evStatus.remainTime2.atc.value,
       range:
         status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value > 0
-          ? status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value
+          ? this.convertDistance(status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value)
           : this.cache?.status.range ?? 0,
       locked: status.doorLock,
       climate: status.airCtrlOn,
       soc: status.evStatus.batteryStatus,
       twelveSoc: status.battery?.batSoc ?? 0,
-      odometer: status.odometer ?? 0,
+      odometer: this.convertDistance(status.odometer ?? 0),
       location: location ?? this.cache?.status.location,
       chargeLimit: chargeLimit.acPercent > 0 ? chargeLimit : this.cache?.status.chargeLimit,
     }

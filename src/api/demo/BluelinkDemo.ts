@@ -14,9 +14,15 @@ import statusFixture from './fixtures/status.json'
 const COMMAND_DELAY_MS = 800
 
 export class BluelinkDemo extends Bluelink {
+  private fixtureRange: number
+  private fixtureOdometer: number
+
   constructor(config: Config) {
     super(config)
     this.distanceUnit = config.distanceUnit
+    this.apiDistanceUnit = 'mi'
+    this.fixtureRange = statusFixture.range
+    this.fixtureOdometer = statusFixture.odometer
   }
 
   static async init(config: Config): Promise<BluelinkDemo> {
@@ -65,6 +71,8 @@ export class BluelinkDemo extends Bluelink {
     } else {
       this.cache.status.lastStatusCheck = Date.now()
     }
+    this.cache.status.range = this.convertDistance(this.fixtureRange)
+    this.cache.status.odometer = this.convertDistance(this.fixtureOdometer)
     return { car: this.cache.car, status: this.cache.status }
   }
 

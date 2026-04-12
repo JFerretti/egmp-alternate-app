@@ -91,6 +91,11 @@ function commonHeaders(accessToken: string, deviceId: string) {
     'ccsp-service-id': API_CONFIG.clientId,
     'User-Agent': 'okhttp/3.14.9',
     'Content-Type': 'application/json',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-GB',
+    'Accept-Charset': 'UTF-8',
+    'timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+    'locale': 'GB',
   }
 }
 
@@ -142,6 +147,8 @@ function sanitizeUUIDs(data: any): any {
       .replace(/"SID":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"SID": "fixture-sid"')
       .replace(/"vehicleId":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"vehicleId": "fixture-vehicle-id-001"')
       .replace(/"deviceId":\s*"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/g, '"deviceId": "fixture-device-id"')
+      .replace(/"Latitude":\s*[-\d.]+/g, '"Latitude": "51.5074"')
+      .replace(/"Longitude":\s*[-\d.]+/g, '"Longitude": "-0.1278"')
   )
 }
 
@@ -257,10 +264,26 @@ async function main() {
   }
 
   if (command === 'status') {
-    console.log('\nDone (read-only).')
+    const v = statusResult.json.resMsg?.state?.Vehicle
+    if (v) {
+      console.log('\n   --- Climate / HVAC ---')
+      console.log(`   HVAC:`, JSON.stringify(v.Cabin?.HVAC, null, 2))
+      console.log(`   Seat Climate:`, JSON.stringify(v.Cabin?.Seat, null, 2))
+      console.log(`   SteeringWheel:`, JSON.stringify(v.Cabin?.SteeringWheel, null, 2))
+      console.log(`   RestMode:`, JSON.stringify(v.Cabin?.RestMode, null, 2))
+      console.log('\n   --- Remote Control / Service ---')
+      console.log(`   RemoteControl:`, JSON.stringify(v.RemoteControl, null, 2))
+      console.log(`   Service:`, JSON.stringify(v.Service, null, 2))
+      console.log('\n   --- Power / Ignition ---')
+      console.log(`   PowerSupply:`, JSON.stringify(v.Electronics?.PowerSupply, null, 2))
+      console.log(`   DrivingReady:`, v.DrivingReady)
+      console.log('\n   --- Green / Climate Power ---')
+      console.log(`   PowerConsumption.Climate:`, v.Green?.PowerConsumption?.Prediction?.Climate)
+    }
+    saveFixture('europe-status-capture', sanitizeUUIDs(statusResult.json))
     console.log('\nFull response saved to: /tmp/bluelink-status.json')
-    const fs = await import('fs')
     fs.writeFileSync('/tmp/bluelink-status.json', JSON.stringify(statusResult.json, null, 2))
+    console.log('Done (read-only).')
     return
   }
 
@@ -374,6 +397,7 @@ async function main() {
 
   // Step 7: Poll for completion
   console.log(`\n7. Polling for completion (msgId: ${transactionId})...`)
+  let commandSucceeded = false
   const MAX_POLLS = 20
   for (let i = 0; i < MAX_POLLS; i++) {
     await sleep(2000)
@@ -393,19 +417,51 @@ async function main() {
           if (record.result === 'success') {
             console.log(`   SUCCESS after ${(i + 1) * 2}s`)
             saveFixture(`europe-poll-${command}-success`, sanitizePollRecords(pollResult.json))
-            return
+            commandSucceeded = true
+            break
           } else if (record.result === 'fail' || record.result === 'non-response') {
             console.log(`   FAILED: ${record.result}`)
             console.log(`   ${JSON.stringify(record, null, 2)}`)
             saveFixture(`europe-poll-${command}-fail`, sanitizePollRecords(pollResult.json))
-            return
+            break
           }
         }
       }
     }
+    if (commandSucceeded) break
     process.stdout.write(`   Poll ${i + 1}/${MAX_POLLS}...\r`)
   }
-  console.log(`   Timed out after ${MAX_POLLS * 2}s — command may still be processing.`)
+  if (!commandSucceeded) {
+    console.log(`   Timed out after ${MAX_POLLS * 2}s — command may still be processing.`)
+  }
+
+  // Step 8: Capture post-command status
+  console.log(`\n8. Capturing post-command vehicle status...`)
+  console.log('   Waiting 10s for vehicle state to settle...')
+  await sleep(10000)
+  const postStatusResult = await apiRequest(
+    `${API_CONFIG.apiDomain}/api/v1/spa/vehicles/${vehicleId}/ccs2/carstatus/latest`,
+    {
+      headers: {
+        ...commonHeaders(accessToken, deviceId),
+        ccuCCS2ProtocolSupport: ccs2.toString(),
+      },
+    }
+  )
+  if (postStatusResult.status === 200) {
+    const v = postStatusResult.json.resMsg?.state?.Vehicle
+    if (v) {
+      console.log(`   Climate: ${v.Cabin?.HVAC?.Row1?.Driver?.Blower?.SpeedLevel > 0 ? 'ON' : 'OFF'}`)
+      console.log(`   HVAC Temp: ${JSON.stringify(v.Cabin?.HVAC?.Row1?.Driver?.Temperature)}`)
+      console.log(`   RemoteControl: ${JSON.stringify(v.RemoteControl)}`)
+      console.log(`   Service.RemoteControl: ${JSON.stringify(v.Service?.ConnectedCar?.RemoteControl)}`)
+    }
+    saveFixture(`europe-status-after-${command}`, sanitizeUUIDs(postStatusResult.json))
+    console.log(`\n   Full post-command status also saved to: /tmp/bluelink-status-after-${command}.json`)
+    fs.writeFileSync(`/tmp/bluelink-status-after-${command}.json`, JSON.stringify(postStatusResult.json, null, 2))
+  } else {
+    console.log(`   Status fetch returned ${postStatusResult.status}`)
+  }
 }
 
 main().catch((err) => {

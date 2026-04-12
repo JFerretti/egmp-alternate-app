@@ -178,6 +178,11 @@ export class BluelinkEurope extends Bluelink {
         : '0'
   }
 
+  private isCCS2(): boolean {
+    const val = this.europeccs2 ?? this.cache?.car.europeccs2
+    return typeof val === 'number' && val > 0
+  }
+
   private requestResponseValid(resp: Record<string, any>, _data: Record<string, any>): { valid: boolean; retry: boolean } {
     if (Object.hasOwn(resp, 'statusCode') && (resp.statusCode === 200 || resp.statusCode === 204 || resp.statusCode === 302)) {
       return { valid: true, retry: false }
@@ -567,10 +572,7 @@ export class BluelinkEurope extends Bluelink {
   }
 
   protected returnCarStatus(status: any, updateTime: number): BluelinkStatus {
-    const newOdometer =
-      this.distanceUnit === 'mi'
-        ? Math.floor(status.Drivetrain.Odometer * 0.621371)
-        : Math.floor(status.Drivetrain.Odometer)
+    const newOdometer = this.convertDistance(status.Drivetrain.Odometer)
 
     let isCharging = false
     let chargingPower = 0
@@ -604,9 +606,7 @@ export class BluelinkEurope extends Bluelink {
       remainingChargeTimeMins: status.Green.ChargingInformation.Charging.RemainTime,
       range:
         status.Drivetrain.FuelSystem.DTE.Total > 0
-          ? Math.floor(this.distanceUnit === 'mi'
-              ? status.Drivetrain.FuelSystem.DTE.Total * 0.621371
-              : status.Drivetrain.FuelSystem.DTE.Total)
+          ? this.convertDistance(status.Drivetrain.FuelSystem.DTE.Total)
           : this.cache?.status.range ?? 0,
       locked: !(
         Boolean(status.Cabin.Door.Row1.Driver.Open) &&
@@ -768,11 +768,15 @@ export class BluelinkEurope extends Bluelink {
   }
 
   protected async climateOn(id: string, config: ClimateRequest): Promise<{ isSuccess: boolean; data: BluelinkStatus }> {
+    const heatingFields = this.isCCS2()
+      ? { strgWhlHeating: config.steering ? 1 : 0, sideRearMirrorHeating: config.rearDefrost ? 1 : 0 }
+      : { heating1: this.getHeatingValue(config.rearDefrost, config.steering) }
+
     return await this.climateStartStop(id, {
       command: 'start',
       windshieldFrontDefogState: config.frontDefrost,
       hvacTempType: 1,
-      heating1: this.getHeatingValue(config.rearDefrost, config.steering),
+      ...heatingFields,
       tempUnit: this.config.tempType,
       drvSeatLoc: this.distanceUnit === 'mi' ? 'R' : 'L',
       hvacTemp: config.temp,

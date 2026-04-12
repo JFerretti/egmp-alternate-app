@@ -102,6 +102,28 @@ When spawning agents in worktrees, always use `mode: "bypassPermissions"`. Workt
 
 Before committing, `npx tsc --noEmit` runs automatically via a PreToolUse hook. If TypeScript fails, the commit is blocked. Fix type errors before retrying.
 
+## CCS2 vs Non-CCS2 Protocol Divergence
+
+Europe and Australia regions support two protocol versions. The car's `ccuCCS2ProtocolSupport` value (from the vehicles API) determines which is used. Check `isCCS2()` in `europe.ts` / `australia.ts`.
+
+**Climate payload differences** (endpoint: `/ccs2/control/temperature` for both):
+
+| Feature | CCS2 (ccuCCS2ProtocolSupport > 0) | Non-CCS2 (= 0) |
+|---|---|---|
+| Steering wheel | `strgWhlHeating: 0\|1` | `heating1` bitfield (3=steering) |
+| Rear defog/mirrors | `sideRearMirrorHeating: 0\|1` | `heating1` bitfield (2=rear) |
+| Both | Both fields set to 1 | `heating1: 4` |
+| Front defog | `windshieldFrontDefogState` (same) | Same |
+| Seat heat values | 0=off, 6=low, 8=high (validated) | 0/2/4/6 (unvalidated — needs testing) |
+
+- **Validated**: CCS2 fields confirmed working against a real IONIQ 5 via `scripts/test-climate.ts`
+- **Not yet validated**: Non-CCS2 `heating1` bitfield and seat values — need a non-CCS2 car to test
+- **Other regions** (USA, Canada, India, USA-Kia) use completely different APIs and are unaffected
+- Test fixtures in `__tests__/fixtures/climate/` document each CCS2 test result
+- Unit tests in `__tests__/api/climatePayload.test.ts` cover both CCS2 and non-CCS2 paths
+
+When modifying climate commands, always consider both protocol paths.
+
 ## Conventions & Patterns
 
 - TypeScript throughout

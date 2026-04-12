@@ -33,6 +33,7 @@ export class BluelinkUSAKia extends Bluelink {
   constructor(config: Config, statusCheckInterval?: number, mfaInputCallback?: MFAInputCallback) {
     super(config)
     this.distanceUnit = 'mi'
+    this.apiDistanceUnit = 'mi'
     this.apiDomain = `https://${DEFAULT_API_DOMAIN}/apigw/v1/`
     this.statusCheckInterval = statusCheckInterval || DEFAULT_STATUS_CHECK_INTERVAL
     this.additionalHeaders = {
@@ -261,7 +262,7 @@ export class BluelinkUSAKia extends Bluelink {
       chargingPower,
       remainingChargeTimeMins: status.evStatus.remainTime2?.atc?.value ?? 0,
       range: status.evStatus.drvDistance?.[0]?.rangeByFuel?.evModeRange?.value > 0
-        ? status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value
+        ? this.convertDistance(status.evStatus.drvDistance[0].rangeByFuel.evModeRange.value)
         : this.cache?.status.range ?? 0,
       locked: status.doorLock,
       climate: status.airCtrlOn,

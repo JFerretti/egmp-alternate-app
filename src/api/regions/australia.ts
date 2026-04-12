@@ -102,6 +102,11 @@ export class BluelinkAustralia extends Bluelink {
         : '0'
   }
 
+  private isCCS2(): boolean {
+    const val = this.europeccs2 ?? this.cache?.car.europeccs2
+    return typeof val === 'number' && val > 0
+  }
+
   private requestResponseValid(
     resp: Record<string, any>,
     _data: Record<string, any>,
@@ -306,10 +311,7 @@ export class BluelinkAustralia extends Bluelink {
   }
 
   protected returnCarStatus(status: any, updateTime: number): BluelinkStatus {
-    const newOdometer =
-      this.distanceUnit === 'mi'
-        ? Math.floor(status.Drivetrain.Odometer * 0.621371)
-        : Math.floor(status.Drivetrain.Odometer)
+    const newOdometer = this.convertDistance(status.Drivetrain.Odometer)
 
     let isCharging = false
     let chargingPower = 0
@@ -346,7 +348,7 @@ export class BluelinkAustralia extends Bluelink {
       remainingChargeTimeMins: status.Green.ChargingInformation.Charging.RemainTime,
       range:
         status.Drivetrain.FuelSystem.DTE.Total > 0
-          ? Math.floor(status.Drivetrain.FuelSystem.DTE.Total)
+          ? this.convertDistance(status.Drivetrain.FuelSystem.DTE.Total)
           : this.cache?.status.range ?? 0,
       locked: !(
         Boolean(status.Cabin.Door.Row1.Driver.Open) &&
@@ -532,13 +534,17 @@ export class BluelinkAustralia extends Bluelink {
   }
 
   protected async climateOn(id: string, config: ClimateRequest): Promise<{ isSuccess: boolean; data: BluelinkStatus }> {
+    const heatingFields = this.isCCS2()
+      ? { strgWhlHeating: config.steering ? 1 : 0, sideRearMirrorHeating: config.rearDefrost ? 1 : 0 }
+      : { heating1: this.getHeatingValue(config.rearDefrost, config.steering) }
+
     return await this.climateStartStop(id, {
       command: 'start',
       windshieldFrontDefogState: config.frontDefrost,
       hvacTempType: 1,
-      heating1: this.getHeatingValue(config.rearDefrost, config.steering),
+      ...heatingFields,
       tempUnit: this.config.tempType,
-      drvSeatLoc: 'R', // Australia uses RHD cars
+      drvSeatLoc: 'R',
       hvacTemp: config.temp,
       ...(config.seatClimateOption &&
         isNotEmptyObject(config.seatClimateOption) && {
