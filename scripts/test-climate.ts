@@ -191,21 +191,201 @@ const SCENARIOS: Record<string, Scenario> = {
     },
   },
 
-  // Phase 3: full warm payload (what the app currently sends)
-  'warm-current': {
-    description: 'Current Warm preset payload (as the app sends it)',
-    expect: 'Should match: 21.5°C, front+rear defog, steering, seats high',
+  // Phase 2b: probe higher seat values
+  'seat-val-10': {
+    description: 'Driver seat climate state = 10',
+    expect: 'Observe seat heat level on car',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      seatClimateInfo: {
+        drvSeatClimateState: 10,
+        psgSeatClimateState: 0,
+        rlSeatClimateState: 0,
+        rrSeatClimateState: 0,
+      },
+    },
+  },
+
+  // Phase 2c: CCS2-specific field probes for rear defog and steering
+  'rear-defog-bool': {
+    description: 'Probe: windshieldRearDefogState=true (CCS2 field name guess)',
+    expect: 'Rear defog ON?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      windshieldRearDefogState: true,
+    },
+  },
+  'steering-heat-1': {
+    description: 'Probe: steeringWheelHeat=1 (CCS2 field name guess)',
+    expect: 'Steering ON?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      steeringWheelHeat: 1,
+    },
+  },
+  'steering-state-1': {
+    description: 'Probe: steeringWheelHeatState=1',
+    expect: 'Steering ON?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      steeringWheelHeatState: 1,
+    },
+  },
+  'defrost-rearwindow': {
+    description: 'Probe: defrost=true (some APIs use a single defrost field)',
+    expect: 'Any defog change?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      defrost: true,
+    },
+  },
+
+  // Phase 2d: heatingAccessory object (CCS2-specific)
+  'heating-accessory-all': {
+    description: 'Probe: heatingAccessory object with steeringWheel + rearWindow',
+    expect: 'Rear defog ON, steering ON?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      heatingAccessory: {
+        steeringWheel: 1,
+        rearWindow: 1,
+        sideMirror: 1,
+      },
+    },
+  },
+  'heating-accessory-steering': {
+    description: 'Probe: heatingAccessory with steeringWheel only',
+    expect: 'Steering ON, rear defog OFF?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      heatingAccessory: {
+        steeringWheel: 1,
+        rearWindow: 0,
+        sideMirror: 0,
+      },
+    },
+  },
+  'heating-accessory-rear': {
+    description: 'Probe: heatingAccessory with rearWindow only',
+    expect: 'Rear defog ON, steering OFF?',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      heating1: 0,
+      drvSeatLoc: 'L',
+      heatingAccessory: {
+        steeringWheel: 0,
+        rearWindow: 1,
+        sideMirror: 0,
+      },
+    },
+  },
+
+  // Phase 2e: CCS2 correct fields (from HA hyundai_kia_connect_api)
+  'ccs2-steering': {
+    description: 'CCS2: strgWhlHeating=1 (steering wheel heater)',
+    expect: 'Steering wheel heat ON',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      strgWhlHeating: 1,
+      sideRearMirrorHeating: 0,
+      drvSeatLoc: 'L',
+    },
+  },
+  'ccs2-mirrors': {
+    description: 'CCS2: sideRearMirrorHeating=1 (mirrors + possibly rear defog)',
+    expect: 'Rear defog and/or mirror heat ON',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21,
+      windshieldFrontDefogState: false,
+      strgWhlHeating: 0,
+      sideRearMirrorHeating: 1,
+      drvSeatLoc: 'L',
+    },
+  },
+  'ccs2-all-heat': {
+    description: 'CCS2: front defog + strgWhlHeating + sideRearMirrorHeating',
+    expect: 'Front defog, rear defog, steering all ON',
     payload: {
       command: 'start',
       hvacTempType: 1,
       tempUnit: 'C',
       hvacTemp: 21.5,
       windshieldFrontDefogState: true,
-      heating1: 4,
+      strgWhlHeating: 1,
+      sideRearMirrorHeating: 1,
+      drvSeatLoc: 'L',
+    },
+  },
+
+  // Phase 3: corrected warm preset (CCS2 validated fields)
+  'warm-corrected': {
+    description: 'Corrected Warm preset with CCS2 fields',
+    expect: '21.5°C, front+rear defog ON, steering ON, driver+passenger seats high',
+    payload: {
+      command: 'start',
+      hvacTempType: 1,
+      tempUnit: 'C',
+      hvacTemp: 21.5,
+      windshieldFrontDefogState: true,
+      strgWhlHeating: 1,
+      sideRearMirrorHeating: 1,
       drvSeatLoc: 'L',
       seatClimateInfo: {
-        drvSeatClimateState: 6,
-        psgSeatClimateState: 6,
+        drvSeatClimateState: 8,
+        psgSeatClimateState: 8,
         rlSeatClimateState: 0,
         rrSeatClimateState: 0,
       },

@@ -25,9 +25,8 @@ const TEMP_RANGE = {
 
 const SEAT_LEVELS = [
   { label: 'Off', value: 0 },
-  { label: 'Low', value: 2 },
-  { label: 'Med', value: 4 },
-  { label: 'High', value: 6 },
+  { label: 'Low', value: 6 },
+  { label: 'High', value: 8 },
 ];
 
 function CommandTile({
@@ -186,7 +185,7 @@ export default function CommandsScreen() {
     if (preset === 'cool') {
       setClimateSettings({ temp: tt === 'F' ? 66 : 19, tempType: tt, defog: false, driverSeat: 0, passengerSeat: 0, steering: false });
     } else {
-      setClimateSettings({ temp: tt === 'F' ? 71 : 21.5, tempType: tt, defog: true, driverSeat: 6, passengerSeat: 6, steering: true });
+      setClimateSettings({ temp: tt === 'F' ? 71 : 21.5, tempType: tt, defog: true, driverSeat: 8, passengerSeat: 8, steering: true });
     }
   };
 

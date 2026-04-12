@@ -1,0 +1,71 @@
+{
+  "scenario": "warm-corrected",
+  "timestamp": "2026-04-12T16:05:28.362Z",
+  "sentPayload": {
+    "command": "start",
+    "hvacTempType": 1,
+    "tempUnit": "C",
+    "hvacTemp": 21.5,
+    "windshieldFrontDefogState": true,
+    "strgWhlHeating": 1,
+    "sideRearMirrorHeating": 1,
+    "drvSeatLoc": "L",
+    "seatClimateInfo": {
+      "drvSeatClimateState": 8,
+      "psgSeatClimateState": 8,
+      "rlSeatClimateState": 0,
+      "rrSeatClimateState": 0
+    }
+  },
+  "apiResponse": {
+    "retCode": "S",
+    "resCode": "0000",
+    "msgId": "fixture-msg-id",
+    "SID": "5b0b9060-3689-11f1-871f-07f90ba0e5fa"
+  },
+  "preClimateState": {
+    "hvac": {
+      "blowerSpeed": 0,
+      "tempValue": "OFF",
+      "tempUnit": 0
+    },
+    "defog": {
+      "frontDefog": 0,
+      "frontHeat": 0,
+      "rearDefog": 0
+    },
+    "steeringWheel": {
+      "heatState": 0,
+      "remoteStep": 0
+    },
+    "seats": {
+      "driverState": 2,
+      "passengerState": 2,
+      "rearLeftState": 2,
+      "rearRightState": 2
+    }
+  },
+  "postClimateState": {
+    "hvac": {
+      "blowerSpeed": 7,
+      "tempValue": "21.5",
+      "tempUnit": 0
+    },
+    "defog": {
+      "frontDefog": 1,
+      "frontHeat": 0,
+      "rearDefog": 1
+    },
+    "steeringWheel": {
+      "heatState": 1,
+      "remoteStep": 1
+    },
+    "seats": {
+      "driverState": 8,
+      "passengerState": 8,
+      "rearLeftState": 2,
+      "rearRightState": 2
+    }
+  },
+  "observed": "<<FILL IN: what did the car actually do?>>"
+}

@@ -63,52 +63,58 @@ describe('Europe climate payload construction', () => {
     jest.restoreAllMocks()
   })
 
-  describe('heating1 (rear defog + steering encoding)', () => {
-    it('sends heating1=0 when both rearDefrost and steering are false', async () => {
+  describe('CCS2 defog + steering fields', () => {
+    it('sends strgWhlHeating=0 and sideRearMirrorHeating=0 when both off', async () => {
       await bluelink.sendClimateOn({
         enable: true, frontDefrost: false, rearDefrost: false,
         steering: false, temp: 21, durationMinutes: 10,
       })
       const payload = getClimatePayload(fetchMock)
-      expect(payload.heating1).toBe(0)
+      expect(payload.strgWhlHeating).toBe(0)
+      expect(payload.sideRearMirrorHeating).toBe(0)
       expect(payload.windshieldFrontDefogState).toBe(false)
+      expect(payload.heating1).toBeUndefined()
     })
 
-    it('sends heating1=2 for rearDefrost only', async () => {
+    it('sends sideRearMirrorHeating=1 for rearDefrost only', async () => {
       await bluelink.sendClimateOn({
         enable: true, frontDefrost: false, rearDefrost: true,
         steering: false, temp: 21, durationMinutes: 10,
       })
       const payload = getClimatePayload(fetchMock)
-      expect(payload.heating1).toBe(2)
+      expect(payload.sideRearMirrorHeating).toBe(1)
+      expect(payload.strgWhlHeating).toBe(0)
     })
 
-    it('sends heating1=3 for steering only', async () => {
+    it('sends strgWhlHeating=1 for steering only', async () => {
       await bluelink.sendClimateOn({
         enable: true, frontDefrost: false, rearDefrost: false,
         steering: true, temp: 21, durationMinutes: 10,
       })
       const payload = getClimatePayload(fetchMock)
-      expect(payload.heating1).toBe(3)
+      expect(payload.strgWhlHeating).toBe(1)
+      expect(payload.sideRearMirrorHeating).toBe(0)
     })
 
-    it('sends heating1=4 for both rearDefrost and steering', async () => {
+    it('sends both strgWhlHeating=1 and sideRearMirrorHeating=1', async () => {
       await bluelink.sendClimateOn({
         enable: true, frontDefrost: false, rearDefrost: true,
         steering: true, temp: 21, durationMinutes: 10,
       })
       const payload = getClimatePayload(fetchMock)
-      expect(payload.heating1).toBe(4)
+      expect(payload.strgWhlHeating).toBe(1)
+      expect(payload.sideRearMirrorHeating).toBe(1)
     })
 
-    it('sends windshieldFrontDefogState independently from heating1', async () => {
+    it('sends windshieldFrontDefogState independently', async () => {
       await bluelink.sendClimateOn({
         enable: true, frontDefrost: true, rearDefrost: true,
         steering: true, temp: 21, durationMinutes: 10,
       })
       const payload = getClimatePayload(fetchMock)
       expect(payload.windshieldFrontDefogState).toBe(true)
-      expect(payload.heating1).toBe(4)
+      expect(payload.strgWhlHeating).toBe(1)
+      expect(payload.sideRearMirrorHeating).toBe(1)
     })
   })
 
@@ -175,20 +181,21 @@ describe('Europe climate payload construction', () => {
         steering: true,
         temp: 21.5,
         durationMinutes: 10,
-        seatClimateOption: { driver: 6, passenger: 6, rearLeft: 0, rearRight: 0 },
+        seatClimateOption: { driver: 8, passenger: 8, rearLeft: 0, rearRight: 0 },
       })
       const payload = getClimatePayload(fetchMock)
       expect(payload).toEqual({
         command: 'start',
         windshieldFrontDefogState: true,
         hvacTempType: 1,
-        heating1: 4,
+        strgWhlHeating: 1,
+        sideRearMirrorHeating: 1,
         tempUnit: 'C',
         drvSeatLoc: 'L',
         hvacTemp: 21.5,
         seatClimateInfo: {
-          drvSeatClimateState: 6,
-          psgSeatClimateState: 6,
+          drvSeatClimateState: 8,
+          psgSeatClimateState: 8,
           rlSeatClimateState: 0,
           rrSeatClimateState: 0,
         },
